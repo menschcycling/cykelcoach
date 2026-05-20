@@ -26,34 +26,25 @@
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #1a1a18;
-      --kort: #2a2a28;
-      --tekst: #e8e6de;
-      --tekst2: #9c9a92;
-      --kant: rgba(255,255,255,0.1);
-      --blaa-lys: #0C447C;
-      --graa-lys: #2e2e2c;
-      --graa-mid: #383836;
+      --bg: #1a1a18; --kort: #2a2a28; --tekst: #e8e6de; --tekst2: #9c9a92;
+      --kant: rgba(255,255,255,0.1); --blaa-lys: #0C447C;
+      --graa-lys: #2e2e2c; --graa-mid: #383836;
     }
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--tekst); font-size: 16px; }
 
-  /* TOP BAR */
   .topbar { background: var(--kort); border-bottom: 0.5px solid var(--kant); padding: 12px 16px; display: flex; align-items: center; gap: 10px; position: sticky; top: 0; z-index: 100; }
   .topbar-logo { height: 32px; width: auto; display: block; }
   .topbar-titel { font-size: 17px; font-weight: 600; flex: 1; }
   .tilbage-knap { font-size: 15px; color: var(--blaa-mid); cursor: pointer; padding: 4px 0; white-space: nowrap; }
 
-  /* SØGEFELT */
   .soeg-wrapper { padding: 12px 16px; }
   .soeg-felt { width: 100%; padding: 10px 14px; border-radius: var(--radius-sm); border: 0.5px solid var(--kant); background: var(--kort); color: var(--tekst); font-size: 16px; outline: none; }
   .soeg-felt:focus { border-color: var(--blaa-mid); }
 
-  /* SEKTION LABEL */
-  .sektion-label { font-size: 12px; font-weight: 600; color: var(--tekst2); text-transform: uppercase; letter-spacing: 0.06em; padding: 8px 16px 6px; }
+  .sektion-label { font-size: 12px; font-weight: 600; color: var(--tekst2); text-transform: uppercase; letter-spacing: 0.06em; padding: 10px 0 6px; }
 
-  /* RYTTER LISTE */
   .rytter-liste { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 8px; }
   .rytter-kort { background: var(--kort); border: 0.5px solid var(--kant); border-radius: var(--radius); padding: 14px 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; transition: opacity 0.1s; }
   .rytter-kort:active { opacity: 0.7; }
@@ -63,103 +54,98 @@
   .rytter-sub { font-size: 14px; color: var(--tekst2); margin-top: 2px; }
   .rytter-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
   .badge { font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 20px; white-space: nowrap; }
-  /* Niveau badges */
-  .badge-A    { background: #1a1a18; color: #ffffff; }
-  .badge-B    { background: #2d6a2d; color: #ffffff; }
-  .badge-U19  { background: #1a1a18; color: #ffffff; }
-  .badge-U17  { background: #e07b00; color: #1a1a18; }
-  .badge-Master { background: #d4b800; color: #1a1a18; }
-  .badge-Motion { background: #a8d8ea; color: #1a1a18; }
+  .badge-A     { background: #1a1a18; color: #ffffff; }
+  .badge-B     { background: #2d6a2d; color: #ffffff; }
+  .badge-U19   { background: #1a1a18; color: #ffffff; }
+  .badge-U17   { background: #e07b00; color: #1a1a18; }
+  .badge-Master{ background: #d4b800; color: #1a1a18; }
+  .badge-Motion{ background: #a8d8ea; color: #1a1a18; }
   .badge-anden { background: var(--graa-mid); color: var(--tekst); }
   .chevron { color: var(--tekst2); font-size: 18px; margin-left: 2px; }
 
-  /* DETALJE VIEW */
   .detalje { display: none; }
   .profil-header { background: var(--kort); border-bottom: 0.5px solid var(--kant); padding: 16px; display: flex; align-items: center; gap: 14px; }
   .profil-avatar { width: 56px; height: 56px; border-radius: 50%; background: var(--graa-mid); color: var(--tekst); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 20px; flex-shrink: 0; }
   .profil-navn { font-size: 20px; font-weight: 700; }
   .profil-sub { font-size: 15px; color: var(--tekst2); margin-top: 3px; }
 
-  /* TAB BAR */
-  .tab-bar { display: flex; gap: 6px; padding: 12px 16px 4px; }
-  .tab { flex: 1; padding: 9px 4px; text-align: center; font-size: 14px; font-weight: 500; border-radius: var(--radius-sm); border: 0.5px solid var(--kant); cursor: pointer; color: var(--tekst2); background: transparent; transition: all 0.15s; }
+  .tab-bar { display: flex; gap: 5px; padding: 12px 16px 4px; }
+  .tab { flex: 1; padding: 8px 2px; text-align: center; font-size: 13px; font-weight: 500; border-radius: var(--radius-sm); border: 0.5px solid var(--kant); cursor: pointer; color: var(--tekst2); background: transparent; transition: all 0.15s; }
   .tab.aktiv { background: var(--graa-mid); color: var(--tekst); border-color: transparent; font-weight: 600; }
 
-  /* TAB INDHOLD */
   .tab-indhold { display: none; padding: 12px 16px 32px; }
   .tab-indhold.aktiv { display: block; }
 
-  /* METRIC GRID */
   .metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
   .metric-kort { background: var(--graa-lys); border-radius: var(--radius-sm); padding: 12px 14px; }
   .metric-label { font-size: 13px; color: var(--tekst2); margin-bottom: 4px; font-weight: 500; }
   .metric-vaerdi { font-size: 18px; font-weight: 600; color: var(--tekst); }
   .metric-enhed { font-size: 13px; color: var(--tekst2); font-weight: 400; }
 
-  /* DATA KORT */
   .data-kort { background: var(--kort); border: 0.5px solid var(--kant); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px; }
   .data-raekke { display: flex; justify-content: space-between; align-items: flex-start; padding: 10px 0; border-bottom: 0.5px solid var(--kant); gap: 12px; }
   .data-raekke:last-child { border-bottom: none; padding-bottom: 0; }
   .data-noegle { font-size: 16px; color: var(--tekst2); flex-shrink: 0; }
-  .data-val { font-size: 16px; color: var(--tekst); text-align: right; line-height: 1.5; }
+  .data-val { font-size: 16px; color: var(--tekst); text-align: right; line-height: 1.5; display: flex; align-items: center; gap: 6px; justify-content: flex-end; }
 
-  /* NOTE BOKS */
   .note-boks { background: var(--graa-lys); border-radius: var(--radius-sm); padding: 13px 15px; font-size: 16px; color: var(--tekst); line-height: 1.7; margin-bottom: 10px; }
 
-  /* REDIGER MODAL */
+  /* CP TEST TABEL */
+  .test-tabel { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
+  .test-tabel th { font-size: 12px; font-weight: 600; color: var(--tekst2); text-transform: uppercase; letter-spacing: 0.05em; padding: 6px 10px; text-align: left; background: var(--graa-mid); }
+  .test-tabel th:last-child { text-align: right; }
+  .test-tabel td { font-size: 16px; padding: 10px 10px; border-bottom: 0.5px solid var(--kant); color: var(--tekst); }
+  .test-tabel td:last-child { text-align: right; }
+  .test-tabel tr:last-child td { border-bottom: none; }
+  .test-tabel-wrap { background: var(--kort); border: 0.5px solid var(--kant); border-radius: var(--radius); overflow: hidden; margin-bottom: 14px; }
+  .rediger-ikon { font-size: 15px; color: var(--blaa-mid); cursor: pointer; padding: 2px 4px; flex-shrink: 0; }
+
+  /* HISTORISK */
+  .historisk-boks { background: var(--graa-lys); border-radius: var(--radius-sm); padding: 13px 15px; font-size: 16px; color: var(--tekst); line-height: 1.7; min-height: 120px; }
+
+  /* MODAL */
   .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 200; align-items: flex-end; }
   .modal-overlay.aktiv { display: flex; }
   .modal-boks { background: var(--kort); border-radius: 16px 16px 0 0; padding: 20px 16px 32px; width: 100%; }
   .modal-titel { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
-  .modal-textarea { width: 100%; padding: 12px; border: 0.5px solid var(--kant); border-radius: var(--radius-sm); background: var(--bg); color: var(--tekst); font-size: 16px; font-family: inherit; line-height: 1.6; resize: vertical; min-height: 120px; outline: none; }
+  .modal-textarea { width: 100%; padding: 12px; border: 0.5px solid var(--kant); border-radius: var(--radius-sm); background: var(--bg); color: var(--tekst); font-size: 16px; font-family: inherit; line-height: 1.6; resize: vertical; min-height: 100px; outline: none; }
   .modal-textarea:focus { border-color: var(--blaa-mid); }
   .modal-knapper { display: flex; gap: 10px; margin-top: 12px; }
   .modal-gem { flex: 1; padding: 13px; background: #1a1a18; color: white; border: none; border-radius: var(--radius-sm); font-size: 15px; font-weight: 600; cursor: pointer; }
   .modal-gem:active { opacity: 0.8; }
   .modal-annuller { flex: 1; padding: 13px; background: transparent; color: var(--tekst2); border: 0.5px solid var(--kant); border-radius: var(--radius-sm); font-size: 15px; cursor: pointer; }
-  .rediger-ikon { float: right; font-size: 14px; color: var(--blaa-mid); cursor: pointer; padding: 2px 6px; margin-top: -2px; }
 
-  /* LOADING / FEJL */
   .status { text-align: center; padding: 48px 16px; color: var(--tekst2); }
   .spinner { width: 32px; height: 32px; border: 2.5px solid var(--kant); border-top-color: var(--blaa-mid); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .fejl-boks { background: var(--graa-lys); border-radius: var(--radius); padding: 16px; margin: 16px; color: var(--tekst); font-size: 15px; line-height: 1.6; border: 0.5px solid var(--kant); }
 
-  /* INDSTILLINGER */
   .indst-boks { background: var(--kort); border: 0.5px solid var(--kant); border-radius: var(--radius); padding: 16px; margin: 16px; }
   .indst-label { font-size: 14px; color: var(--tekst2); margin-bottom: 6px; }
   .indst-input { width: 100%; padding: 10px 12px; border: 0.5px solid var(--kant); border-radius: var(--radius-sm); background: var(--bg); color: var(--tekst); font-size: 14px; font-family: monospace; }
   .indst-gem { width: 100%; margin-top: 10px; padding: 13px; background: #1a1a18; color: white; border: none; border-radius: var(--radius-sm); font-size: 15px; font-weight: 600; cursor: pointer; }
-  .indst-gem:active { opacity: 0.8; }
   .indst-vejl { font-size: 13px; color: var(--tekst2); margin-top: 8px; line-height: 1.5; }
-
   .ingen-ryttere { text-align: center; padding: 32px 16px; color: var(--tekst2); font-size: 15px; }
 </style>
 </head>
 <body>
 
-<!-- LISTE VIEW -->
 <div id="liste-view">
   <div class="topbar">
     <img src="logo.png" class="topbar-logo" alt="Mensch Cycling">
     <div class="topbar-titel">Mensch Cycling</div>
-    <div style="font-size:13px; color:var(--tekst2); cursor:pointer;" onclick="visIndstillinger()">⚙️</div>
+    <div style="font-size:13px;color:var(--tekst2);cursor:pointer;" onclick="visIndstillinger()">⚙️</div>
   </div>
   <div id="liste-indhold">
-    <div class="status">
-      <div class="spinner"></div>
-      <div>Henter ryttere...</div>
-    </div>
+    <div class="status"><div class="spinner"></div><div>Henter ryttere...</div></div>
   </div>
 </div>
 
-<!-- DETALJE VIEW -->
 <div id="detalje-view" class="detalje">
   <div class="topbar">
     <div class="tilbage-knap" onclick="visListe()">‹ Tilbage</div>
     <div class="topbar-titel" id="detalje-topbar-navn"></div>
   </div>
-
   <div class="profil-header">
     <div class="profil-avatar" id="profil-avatar"></div>
     <div>
@@ -167,19 +153,18 @@
       <div class="profil-sub" id="profil-sub"></div>
     </div>
   </div>
-
   <div class="tab-bar">
-    <div class="tab aktiv" onclick="skiftTab('tal', this)">Tal</div>
-    <div class="tab" onclick="skiftTab('profil', this)">Profil</div>
-    <div class="tab" onclick="skiftTab('saeson', this)">2026</div>
+    <div class="tab aktiv"  onclick="skiftTab('tal',this)">Tal</div>
+    <div class="tab" onclick="skiftTab('profil',this)">Profil</div>
+    <div class="tab" onclick="skiftTab('saeson',this)">Sæson</div>
+    <div class="tab" onclick="skiftTab('historisk',this)">Historisk</div>
   </div>
-
-  <div id="tab-tal" class="tab-indhold aktiv"></div>
-  <div id="tab-profil" class="tab-indhold"></div>
-  <div id="tab-saeson" class="tab-indhold"></div>
+  <div id="tab-tal"       class="tab-indhold aktiv"></div>
+  <div id="tab-profil"    class="tab-indhold"></div>
+  <div id="tab-saeson"    class="tab-indhold"></div>
+  <div id="tab-historisk" class="tab-indhold"></div>
 </div>
 
-<!-- INDSTILLINGER VIEW -->
 <div id="indst-view" style="display:none;">
   <div class="topbar">
     <div class="tilbage-knap" onclick="visListe()">‹ Tilbage</div>
@@ -193,11 +178,10 @@
   </div>
 </div>
 
-<!-- REDIGER MODAL -->
 <div class="modal-overlay" id="modal" onclick="lukkModal(event)">
   <div class="modal-boks">
     <div class="modal-titel" id="modal-titel">Rediger</div>
-    <textarea class="modal-textarea" id="modal-tekst" rows="5"></textarea>
+    <textarea class="modal-textarea" id="modal-tekst"></textarea>
     <div class="modal-knapper">
       <button class="modal-annuller" onclick="skjulModal()">Annuller</button>
       <button class="modal-gem" onclick="gemFelt()">Gem i Google Sheet</button>
@@ -213,7 +197,7 @@ var aktivCelleRef = null;
 var aktivTab = "tal";
 
 window.onload = function() {
-  if (API_URL) { hentRytterliste(); } else { visIndstillinger(); }
+  if (API_URL) hentRytterliste(); else visIndstillinger();
 };
 
 // ── NAVIGATION ────────────────────────────────────────────
@@ -243,6 +227,7 @@ function gemUrl() {
   visListe();
   hentRytterliste();
 }
+
 function skiftTab(navn, el) {
   aktivTab = navn;
   document.querySelectorAll(".tab").forEach(t => t.classList.remove("aktiv"));
@@ -251,8 +236,8 @@ function skiftTab(navn, el) {
   document.getElementById("tab-" + navn).classList.add("aktiv");
 }
 function genopretTab(navn) {
+  var navne = ["tal","profil","saeson","historisk"];
   var tabs = document.querySelectorAll(".tab");
-  var navne = ["tal","profil","saeson"];
   document.querySelectorAll(".tab-indhold").forEach(t => t.classList.remove("aktiv"));
   tabs.forEach(t => t.classList.remove("aktiv"));
   var idx = navne.indexOf(navn);
@@ -262,7 +247,7 @@ function genopretTab(navn) {
   }
 }
 
-// ── DATA HENTNING ─────────────────────────────────────────
+// ── DATA ──────────────────────────────────────────────────
 function hentRytterliste() {
   document.getElementById("liste-indhold").innerHTML =
     '<div class="status"><div class="spinner"></div><div>Henter ryttere...</div></div>';
@@ -275,22 +260,18 @@ function hentRytterliste() {
     })
     .catch(err => {
       document.getElementById("liste-indhold").innerHTML =
-        '<div class="fejl-boks">Kunne ikke hente data.<br><br><strong>Fejl:</strong> ' + err.message +
-        '<br><br>Tjek din Apps Script URL under ⚙️</div>';
+        '<div class="fejl-boks">Kunne ikke hente data.<br><br><strong>Fejl:</strong> ' + err.message + '<br><br>Tjek din Apps Script URL under ⚙️</div>';
     });
 }
 
 function hentRytterData(id, bevarTab) {
   aktivSheetId = id;
-  var tabEfter = bevarTab || "tal";
   if (!bevarTab) aktivTab = "tal";
-
   visDetalje();
   if (!bevarTab) {
     document.querySelectorAll(".tab").forEach((t,i) => t.classList.toggle("aktiv", i===0));
     document.querySelectorAll(".tab-indhold").forEach((t,i) => t.classList.toggle("aktiv", i===0));
   }
-
   fetch(API_URL + "?handling=rytter&id=" + encodeURIComponent(id))
     .then(r => r.json())
     .then(d => {
@@ -298,122 +279,144 @@ function hentRytterData(id, bevarTab) {
       bygTalTab(d);
       bygProfilTab(d);
       bygSaesonTab(d);
-      var init = hentInitialer(d.navn);
+      bygHistoriskTab(d);
       document.getElementById("detalje-topbar-navn").textContent = d.navn;
-      document.getElementById("profil-avatar").textContent = init;
+      document.getElementById("profil-avatar").textContent = hentInitialer(d.navn);
       document.getElementById("profil-navn").textContent = d.navn;
       document.getElementById("profil-sub").textContent =
         [d.alder ? d.alder + " år" : "", d.niveau ? "Niveau " + d.niveau : "", d.phenotype].filter(Boolean).join(" · ");
-      if (bevarTab) genopretTab(tabEfter);
+      if (bevarTab) genopretTab(bevarTab);
     })
     .catch(err => {
-      document.getElementById("tab-tal").innerHTML =
-        '<div class="fejl-boks">Fejl: ' + err.message + '</div>';
+      document.getElementById("tab-tal").innerHTML = '<div class="fejl-boks">Fejl: ' + err.message + '</div>';
     });
 }
 
 // ── BYGG FANER ────────────────────────────────────────────
 function bygTalTab(d) {
+  var cpVis   = formatCpHel(d.cp);
   var cpKgVis = formatCpKg(d.cpKg);
+  var wPrimVis = formatWPrim(d.wPrim);
   document.getElementById("tab-tal").innerHTML =
-    sektionLabel("Performance") +
+    sl("Performance") +
     '<div class="metric-grid">' +
-      metricHtml("CP", d.cp, "W") +
-      metricHtml("CP relativ", cpKgVis, "W/kg") +
-      metricHtml("W'", wPrimKJ(d.wPrim), "kJ") +
-      metricHtml("VO2max", d.vo2max, "ml/kg") +
+      mh("CP", cpVis, "W") + mh("CP relativ", cpKgVis, "W/kg") +
+      mh("W'", wPrimVis, "J") + mh("VO2max", d.vo2max, "ml/kg") +
     '</div>' +
-    sektionLabel("Antropometri") +
+    sl("CP test") +
+    '<div class="test-tabel-wrap"><table class="test-tabel">' +
+      '<thead><tr><th>Tid (s)</th><th>Watt</th><th>Forventet</th><th>Afv. %</th></tr></thead>' +
+      '<tbody>' +
+        testRaekke(d.test1tid, d.test1watt, d.test1forventet, d.test1afvigelse, "A14", "B14", 1) +
+        testRaekke(d.test2tid, d.test2watt, d.test2forventet, d.test2afvigelse, "A15", "B15", 2) +
+        testRaekke(d.test3tid, d.test3watt, d.test3forventet, d.test3afvigelse, "A16", "B16", 3) +
+      '</tbody>' +
+    '</table></div>' +
+    sl("Antropometri") +
     '<div class="data-kort">' +
-      dataRaekke("Højde", d.hojde ? d.hojde + " cm" : "–", null) +
-      dataRaekke("Vægt", d.vaegt ? d.vaegt + " kg" : "–", null) +
-      dataRaekke("Fødselsdato", d.fodselsdato || "–", null) +
-      dataRaekke("Volumen sidste sæson", d.volumen || "–", "B14") +
+      dr("Højde",               d.hojde  ? d.hojde  + " cm" : "–", null) +
+      dr("Vægt",                d.vaegt  ? d.vaegt  + " kg"  : "–", "B7") +
+      dr("Fødselsdato",         d.fodselsdato || "–", null) +
+      dr("Volumen sidste sæson", d.volumen || "–", "B22") +
     '</div>';
+}
+
+function testRaekke(tid, watt, forventet, afvigelse, tidRef, wattRef, nr) {
+  var tidVis  = tid  || "–";
+  var wattVis = watt || "–";
+  var forvVis = forventet  || "–";
+  var afvVis  = afvigelse  || "–";
+  var redigerTid  = '<span class="rediger-ikon" onclick="aabneModal(\'' + tidRef  + '\',\'Tid '  + nr + '\',\'' + (tid||"")  + '\')">✎</span>';
+  var redigerWatt = '<span class="rediger-ikon" onclick="aabneModal(\'' + wattRef + '\',\'Watt ' + nr + '\',\'' + (watt||"") + '\')">✎</span>';
+  return '<tr>' +
+    '<td>' + tidVis  + ' ' + redigerTid  + '</td>' +
+    '<td>' + wattVis + ' ' + redigerWatt + '</td>' +
+    '<td style="color:var(--tekst2)">' + forvVis + '</td>' +
+    '<td style="color:var(--tekst2);text-align:right;">' + afvVis + '</td>' +
+    '</tr>';
 }
 
 function bygProfilTab(d) {
   document.getElementById("tab-profil").innerHTML =
-    sektionLabel("Mål") + noteBoks(d.maal, "Mål", "B12") +
-    sektionLabel("Personlighed") + noteBoks(d.personlighed, "Personlighed", "B16") +
-    sektionLabel("Vurdering") + noteBoks(d.vurdering, "Vurdering", "B18") +
-    sektionLabel("Historik") + noteBoks(d.historik, "Historik", "B13") +
-    sektionLabel("Ressourcer") + noteBoks(d.ressourcer, "Ressourcer", "B15") +
-    sektionLabel("Andet") + noteBoks(d.andet, "Andet", "B17");
+    sl("Mål")          + nb(d.maal,         "Mål",          "B20") +
+    sl("Personlighed") + nb(d.personlighed,  "Personlighed", "B24") +
+    sl("Vurdering")    + nb(d.vurdering,     "Vurdering",    "B26") +
+    sl("Historik")     + nb(d.historik,      "Historik",     "B21") +
+    sl("Ressourcer")   + nb(d.ressourcer,    "Ressourcer",   "B23") +
+    sl("Andet")        + nb(d.andet,         "Andet",        "B25");
 }
 
 function bygSaesonTab(d) {
-  var cpKg2026Vis = formatCpKg(d.cpKg2026);
+  var cpVis   = formatCpHel(d.cpSaeson);
+  var cpKgVis = formatCpKg(d.cpKgSaeson);
+  var wPrimVis = formatWPrim(d.wPrimSaeson);
   document.getElementById("tab-saeson").innerHTML =
-    sektionLabel("Mål 2026") + noteBoks(d.maal2026, "Mål 2026", "B24") +
-    sektionLabel("Watttal 2026") +
+    sl("Mål") + nb(d.maalSaeson, "Mål", "B33") +
+    sl("Watttal") +
     '<div class="metric-grid">' +
-      metricHtml("CP", d.cp2026, "W") +
-      metricHtml("CP relativ", cpKg2026Vis, "W/kg") +
-      metricHtml("W'", d.wPrim2026 ? Number(String(d.wPrim2026).replace(/\./g,"").replace(",",".")).toLocaleString("da") : "", "J") +
-      metricHtml("Phenotype", d.phenotype2026, "") +
+      mh("CP", cpVis, "W") + mh("CP relativ", cpKgVis, "W/kg") +
+      mh("W'", wPrimVis, "J") + mh("Phenotype", d.phenotypeSaeson, "") +
     '</div>' +
-    sektionLabel("Fysisk indsats") + noteBoks(d.fysisk2026, "Fysisk indsats", "B26") +
-    sektionLabel("Anden indsats") + noteBoks(d.andet2026, "Anden indsats", "B27") +
-    sektionLabel("Noter") + noteBoks(d.noter2026, "Noter 2026", "B25");
+    sl("Fysisk indsats") + nb(d.fysiskSaeson,  "Fysisk indsats", "B35") +
+    sl("Anden indsats")  + nb(d.andenSaeson,   "Anden indsats",  "B36") +
+    sl("Noter")          + nb(d.noterSaeson,   "Noter",          "B34");
+}
+
+function bygHistoriskTab(d) {
+  var tekst = d.historisk || "–";
+  var rediger = '<span class="rediger-ikon" style="float:right;" onclick="aabneModal(\'B40\',\'Historisk\',\'' + (d.historisk||"").replace(/'/g,"\\'").replace(/\n/g,"\\n") + '\')">✎</span>';
+  document.getElementById("tab-historisk").innerHTML =
+    '<div style="padding: 10px 0 6px;">' + rediger + '</div>' +
+    '<div class="historisk-boks">' + tekst.replace(/\n/g,"<br>") + '</div>';
 }
 
 // ── HTML HJÆLPERE ─────────────────────────────────────────
-function sektionLabel(tekst) {
-  return '<div class="sektion-label" style="padding:10px 0 6px;">' + tekst + '</div>';
-}
-function metricHtml(label, vaerdi, enhed) {
-  return '<div class="metric-kort">' +
-    '<div class="metric-label">' + label + '</div>' +
+function sl(t) { return '<div class="sektion-label">' + t + '</div>'; }
+
+function mh(label, vaerdi, enhed) {
+  return '<div class="metric-kort"><div class="metric-label">' + label + '</div>' +
     '<div class="metric-vaerdi">' + (vaerdi || "–") +
     (vaerdi && enhed ? ' <span class="metric-enhed">' + enhed + '</span>' : '') +
     '</div></div>';
 }
-function dataRaekke(noegle, vaerdi, celleRef) {
+
+function dr(noegle, vaerdi, celleRef) {
   var rediger = celleRef
     ? '<span class="rediger-ikon" onclick="aabneModal(\'' + celleRef + '\',\'' + noegle + '\',\'' + vaerdi.replace(/'/g,"\\'") + '\')">✎</span>'
     : '';
-  return '<div class="data-raekke">' +
-    '<div class="data-noegle">' + noegle + '</div>' +
-    '<div class="data-val">' + rediger + vaerdi + '</div></div>';
+  return '<div class="data-raekke"><div class="data-noegle">' + noegle + '</div>' +
+    '<div class="data-val">' + vaerdi + rediger + '</div></div>';
 }
-function noteBoks(tekst, label, celleRef) {
-  var visning = tekst || "–";
+
+function nb(tekst, label, celleRef) {
   var rediger = celleRef
-    ? '<span class="rediger-ikon" onclick="aabneModal(\'' + celleRef + '\',\'' + label + '\',\'' + (tekst||"").replace(/'/g,"\\'").replace(/\n/g,"\\n") + '\')">✎</span>'
+    ? '<span class="rediger-ikon" style="float:right;" onclick="aabneModal(\'' + celleRef + '\',\'' + label + '\',\'' + (tekst||"").replace(/'/g,"\\'").replace(/\n/g,"\\n") + '\')">✎</span>'
     : '';
-  return '<div class="note-boks">' + rediger + visning + '</div>';
+  return '<div class="note-boks">' + rediger + (tekst || "–") + '</div>';
 }
 
 // ── NIVEAU BADGE ──────────────────────────────────────────
 function niveauBadge(niveau) {
   if (!niveau) return '';
-  var klasse = "badge-anden";
   var n = niveau.trim();
-  if (n === "A") klasse = "badge-A";
-  else if (n === "B") klasse = "badge-B";
-  else if (n === "U19") klasse = "badge-U19";
-  else if (n === "U17") klasse = "badge-U17";
-  else if (n === "Master") klasse = "badge-Master";
-  else if (n === "Motion") klasse = "badge-Motion";
-  return '<span class="badge ' + klasse + '">' + n + '</span>';
+  var klasser = { "A":"badge-A","B":"badge-B","U19":"badge-U19","U17":"badge-U17","Master":"badge-Master","Motion":"badge-Motion" };
+  var kl = klasser[n] || "badge-anden";
+  return '<span class="badge ' + kl + '">' + n + '</span>';
 }
 
-// ── REDIGER MODAL ─────────────────────────────────────────
+// ── MODAL ─────────────────────────────────────────────────
 function aabneModal(celleRef, label, nuvaerende) {
   aktivCelleRef = celleRef;
   document.getElementById("modal-titel").textContent = "Rediger: " + label;
   document.getElementById("modal-tekst").value = nuvaerende.replace(/\\n/g, "\n");
   document.getElementById("modal").classList.add("aktiv");
-  setTimeout(function() { document.getElementById("modal-tekst").focus(); }, 100);
+  setTimeout(() => document.getElementById("modal-tekst").focus(), 100);
 }
 function skjulModal() {
   document.getElementById("modal").classList.remove("aktiv");
   aktivCelleRef = null;
 }
-function lukkModal(e) {
-  if (e.target === document.getElementById("modal")) skjulModal();
-}
+function lukkModal(e) { if (e.target === document.getElementById("modal")) skjulModal(); }
 function gemFelt() {
   if (!aktivCelleRef || !aktivSheetId) return;
   var nyTekst = document.getElementById("modal-tekst").value;
@@ -430,70 +433,67 @@ function gemFelt() {
       skjulModal();
       hentRytterData(aktivSheetId, tabAtBevare);
     })
-    .catch(err => {
-      alert("Kunne ikke gemme: " + err.message);
-    })
-    .finally(() => {
-      gemKnap.textContent = "Gem i Google Sheet";
-      gemKnap.disabled = false;
-    });
+    .catch(err => alert("Kunne ikke gemme: " + err.message))
+    .finally(() => { gemKnap.textContent = "Gem i Google Sheet"; gemKnap.disabled = false; });
 }
 
-// ── RENDER LISTE ──────────────────────────────────────────
+// ── LISTE ─────────────────────────────────────────────────
 function visRytterliste(ryttere) {
   var el = document.getElementById("liste-indhold");
   if (!ryttere || ryttere.length === 0) {
-    el.innerHTML = '<div class="ingen-ryttere">Ingen ryttere fundet i mappen.</div>';
-    return;
+    el.innerHTML = '<div class="ingen-ryttere">Ingen ryttere fundet.</div>'; return;
   }
-  var html = '<div class="soeg-wrapper">' +
-    '<input class="soeg-felt" type="search" placeholder="Søg rytter..." oninput="soegRyttere(this.value)">' +
-    '</div>' +
-    '<div class="sektion-label">Hold (' + ryttere.length + ' ryttere)</div>' +
+  var html = '<div class="soeg-wrapper"><input class="soeg-felt" type="search" placeholder="Søg rytter..." oninput="soegRyttere(this.value)"></div>' +
+    '<div style="font-size:12px;font-weight:600;color:var(--tekst2);text-transform:uppercase;letter-spacing:0.06em;padding:8px 16px 6px;">Hold (' + ryttere.length + ' ryttere)</div>' +
     '<div class="rytter-liste" id="rytter-liste-items">';
   ryttere.forEach(r => { html += rytterKortHtml(r); });
   html += '</div>';
   el.innerHTML = html;
 }
 function rytterKortHtml(r) {
-  var init = hentInitialer(r.navn);
   var cpKgVis = r.cpKg ? formatCpKg(r.cpKg) : "";
   var cpTekst = r.cp ? r.cp + " W · " + cpKgVis + " W/kg" : "Ingen data endnu";
   return '<div class="rytter-kort" onclick="hentRytterData(\'' + r.id + '\')">' +
-    '<div class="avatar">' + init + '</div>' +
-    '<div class="rytter-info">' +
-      '<div class="rytter-navn">' + r.navn + '</div>' +
-      '<div class="rytter-sub">' + cpTekst + (r.phenotype ? ' · ' + r.phenotype : '') + '</div>' +
-    '</div>' +
+    '<div class="avatar">' + hentInitialer(r.navn) + '</div>' +
+    '<div class="rytter-info"><div class="rytter-navn">' + r.navn + '</div>' +
+    '<div class="rytter-sub">' + cpTekst + (r.phenotype ? ' · ' + r.phenotype : '') + '</div></div>' +
     '<div class="rytter-meta">' + niveauBadge(r.niveau) + '</div>' +
     '<div class="chevron">›</div></div>';
 }
-function soegRyttere(soegord) {
-  var lower = soegord.toLowerCase();
-  var filtreret = rytterListe.filter(r => r.navn.toLowerCase().includes(lower));
-  var container = document.getElementById("rytter-liste-items");
-  if (!container) return;
-  container.innerHTML = filtreret.map(rytterKortHtml).join("");
+function soegRyttere(s) {
+  var lower = s.toLowerCase();
+  var c = document.getElementById("rytter-liste-items");
+  if (c) c.innerHTML = rytterListe.filter(r => r.navn.toLowerCase().includes(lower)).map(rytterKortHtml).join("");
 }
 
-// ── HJÆLPEFUNKTIONER ──────────────────────────────────────
+// ── HJÆLPERE ──────────────────────────────────────────────
 function hentInitialer(navn) {
   if (!navn) return "?";
-  var dele = navn.trim().split(/\s+/);
-  if (dele.length >= 2) return (dele[0][0] + dele[dele.length-1][0]).toUpperCase();
-  return navn.substring(0, 2).toUpperCase();
+  var d = navn.trim().split(/\s+/);
+  return d.length >= 2 ? (d[0][0] + d[d.length-1][0]).toUpperCase() : navn.substring(0,2).toUpperCase();
 }
 function formatCpKg(val) {
   if (!val) return "";
-  var num = parseFloat(String(val).replace(",", "."));
-  if (isNaN(num)) return val;
-  return num.toFixed(2);
+  var n = parseFloat(String(val).replace(",","."));
+  return isNaN(n) ? val : n.toFixed(2);
 }
-function wPrimKJ(val) {
+// CP uden decimaler
+function formatCpHel(val) {
   if (!val) return "";
-  var num = parseFloat(String(val).replace(/\./g, "").replace(",", "."));
-  if (isNaN(num)) return val;
-  return (num / 1000).toFixed(1);
+  var n = parseFloat(String(val).replace(",","."));
+  return isNaN(n) ? val : Math.round(n).toString();
+}
+// W' i Joule med punktum som tusindtalsseparator
+function formatWPrim(val) {
+  if (!val) return "";
+  // Værdien fra sheet er fx "11.057" (dansk format med punktum som tusind-sep)
+  // Fjern evt. komma-decimal, bevar punktum som tusind-sep
+  var str = String(val).trim();
+  // Prøv at parse: erstat dansk tusindpunktum -> ingen sep, komma -> punktum
+  var n = parseFloat(str.replace(/\./g,"").replace(",","."));
+  if (isNaN(n)) return str; // returner råværdi hvis parsing fejler
+  // Formater med punktum som tusindtalsseparator, 0 decimaler
+  return Math.round(n).toLocaleString("da-DK").replace(/,/g,".");
 }
 </script>
 </body>
