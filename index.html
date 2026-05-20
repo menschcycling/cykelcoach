@@ -32,14 +32,25 @@
     const WEB_APP_URL = 'INDSET_DIN_APPS_SCRIPT_URL_HER'; 
 
     async function loadData() {
-        try {
-            const response = await fetch(WEB_APP_URL);
-            const data = await response.json();
-            renderApp(data);
-        } catch (error) {
-            document.getElementById('loading').innerText = "Fejl ved indlæsning. Tjek din Web App URL.";
-        }
+    try {
+        // Vi tilføjer redirect: 'follow' for at håndtere Googles viderestilling
+        const response = await fetch(WEB_APP_URL, {
+            method: 'GET',
+            redirect: 'follow',
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8',
+            }
+        });
+        
+        if (!response.ok) throw new Error('Netværksrespons var ikke ok');
+        
+        const data = await response.json();
+        renderApp(data);
+    } catch (error) {
+        console.error("Fejl detaljer:", error);
+        document.getElementById('loading').innerText = "Fejl ved indlæsning. Er scriptet udrullet til 'Alle' (anonyme)?";
     }
+}
 
     function renderApp(riders) {
         const app = document.getElementById('app');
