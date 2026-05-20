@@ -500,17 +500,10 @@ function formatCpHel(val) {
   var n = parseFloat(String(val).replace(",","."));
   return isNaN(n) ? val : Math.round(n).toString();
 }
-// W' i Joule med punktum som tusindtalsseparator
-// Værdien fra sheet er allerede "11.057" (dansk format) – vis den direkte
+// W' kommer nu formateret fra Apps Script fx "11.057" – vis direkte
 function formatWPrim(val) {
   if (!val) return "";
-  var str = String(val).trim();
-  // Hvis tallet allerede indeholder punktum og ingen komma → allerede dansk format, vis direkte
-  if (str.indexOf(".") !== -1 && str.indexOf(",") === -1) return str;
-  // Ellers: erstat komma-decimal med punktum og formater
-  var n = parseFloat(str.replace(/\./g,"").replace(",","."));
-  if (isNaN(n)) return str;
-  return Math.round(n).toLocaleString("da-DK").replace(/,/g,".");
+  return String(val).trim();
 }
 </script>
 </body>
