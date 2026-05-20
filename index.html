@@ -1,196 +1,500 @@
 <!DOCTYPE html>
 <html lang="da">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mensch Cycling Dashboard</title>
-    <style>
-        :root { --accent: #a6192e; --dark: #1a1a1a; --bg: #f4f4f9; --text: #333; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); margin: 0; padding: 10px; color: var(--text); padding-bottom: 80px; }
-        .app-header { display: flex; align-items: center; gap: 15px; padding: 10px 5px 20px 5px; }
-        .app-header img { height: 50px; width: auto; }
-        .app-header h1 { font-size: 22px; margin: 0; color: var(--dark); text-transform: uppercase; letter-spacing: 1px; }
-        .rider-card { background: white; border-radius: 8px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid #ddd; overflow: hidden; }
-        .rider-summary { padding: 15px; display: grid; grid-template-columns: 2fr 1fr 1fr auto; align-items: center; cursor: pointer; background: white; }
-        .rider-summary strong { font-size: 16px; color: var(--dark); }
-        .label-small { color: #888; font-size: 10px; text-transform: uppercase; display: block; margin-bottom: 2px; }
-        .rider-details { display: none; border-top: 1px solid #eee; }
-        .rider-details.open { display: block; }
-        .tabs { display: flex; background: #f9f9f9; border-bottom: 1px solid #eee; }
-        .tab { flex: 1; padding: 12px; text-align: center; font-size: 13px; cursor: pointer; color: #666; }
-        .tab.active { color: var(--accent); border-bottom: 2px solid var(--accent); font-weight: bold; background: white; }
-        .content { padding: 15px; display: none; }
-        .content.active { display: block; }
-        .data-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; }
-        .input-group { margin-bottom: 10px; }
-        .input-group label { display: block; font-size: 9px; font-weight: bold; margin-bottom: 4px; color: #777; text-transform: uppercase; }
-        input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box; }
-        input:disabled { background: #f9f9f9; color: #000; font-weight: 600; }
-        .section-title { grid-column: span 4; font-size: 12px; color: var(--accent); border-bottom: 1px solid #eee; margin: 15px 0 5px 0; padding-bottom: 3px; text-transform: uppercase; font-weight: bold; }
-        .save-btn { background: var(--accent); color: white; border: none; padding: 14px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 15px; text-transform: uppercase; }
-        .settings-area { position: fixed; bottom: 0; left: 0; right: 0; background: #eee; padding: 10px; border-top: 1px solid #ccc; font-size: 11px; z-index: 100; }
-        .settings-content { display: none; margin-top: 10px; }
-        .settings-content.open { display: block; }
-        #loading { text-align: center; padding: 50px; font-weight: bold; color: #666; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Mensch Cycling">
+<title>Mensch Cycling</title>
+<style>
+  :root {
+    --blaa: #185FA5;
+    --blaa-lys: #E6F1FB;
+    --blaa-mid: #378ADD;
+    --blaa-mork: #0C447C;
+    --graa-lys: #f0f0ee;
+    --graa-mid: #e4e4e1;
+    --graa-mork: #5F5E5A;
+    --bg: #f5f5f3;
+    --kort: #ffffff;
+    --tekst: #1a1a18;
+    --tekst2: #5F5E5A;
+    --kant: rgba(0,0,0,0.1);
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1a1a18;
+      --kort: #2a2a28;
+      --tekst: #e8e6de;
+      --tekst2: #9c9a92;
+      --kant: rgba(255,255,255,0.1);
+      --blaa-lys: #0C447C;
+      --graa-lys: #2e2e2c;
+      --graa-mid: #383836;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--tekst); font-size: 16px; }
+
+  /* TOP BAR */
+  .topbar { background: var(--kort); border-bottom: 0.5px solid var(--kant); padding: 12px 16px; display: flex; align-items: center; gap: 10px; position: sticky; top: 0; z-index: 100; }
+  .topbar-logo { height: 32px; width: auto; display: block; }
+  .topbar-titel { font-size: 17px; font-weight: 600; flex: 1; }
+  .tilbage-knap { font-size: 15px; color: var(--blaa-mid); cursor: pointer; padding: 4px 0; white-space: nowrap; }
+
+  /* SØGEFELT */
+  .soeg-wrapper { padding: 12px 16px; }
+  .soeg-felt { width: 100%; padding: 10px 14px; border-radius: var(--radius-sm); border: 0.5px solid var(--kant); background: var(--kort); color: var(--tekst); font-size: 16px; outline: none; }
+  .soeg-felt:focus { border-color: var(--blaa-mid); }
+
+  /* SEKTION LABEL */
+  .sektion-label { font-size: 12px; font-weight: 600; color: var(--tekst2); text-transform: uppercase; letter-spacing: 0.06em; padding: 8px 16px 6px; }
+
+  /* RYTTER LISTE */
+  .rytter-liste { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 8px; }
+  .rytter-kort { background: var(--kort); border: 0.5px solid var(--kant); border-radius: var(--radius); padding: 14px 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; transition: opacity 0.1s; }
+  .rytter-kort:active { opacity: 0.7; }
+  .avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--graa-mid); color: var(--tekst); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; flex-shrink: 0; }
+  .rytter-info { flex: 1; min-width: 0; }
+  .rytter-navn { font-size: 16px; font-weight: 600; color: var(--tekst); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rytter-sub { font-size: 14px; color: var(--tekst2); margin-top: 2px; }
+  .rytter-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+  .badge { font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 20px; white-space: nowrap; }
+  /* Niveau badges */
+  .badge-A    { background: #1a1a18; color: #ffffff; }
+  .badge-B    { background: #2d6a2d; color: #ffffff; }
+  .badge-U19  { background: #1a1a18; color: #ffffff; }
+  .badge-U17  { background: #e07b00; color: #1a1a18; }
+  .badge-Master { background: #d4b800; color: #1a1a18; }
+  .badge-Motion { background: #a8d8ea; color: #1a1a18; }
+  .badge-anden { background: var(--graa-mid); color: var(--tekst); }
+  .chevron { color: var(--tekst2); font-size: 18px; margin-left: 2px; }
+
+  /* DETALJE VIEW */
+  .detalje { display: none; }
+  .profil-header { background: var(--kort); border-bottom: 0.5px solid var(--kant); padding: 16px; display: flex; align-items: center; gap: 14px; }
+  .profil-avatar { width: 56px; height: 56px; border-radius: 50%; background: var(--graa-mid); color: var(--tekst); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 20px; flex-shrink: 0; }
+  .profil-navn { font-size: 20px; font-weight: 700; }
+  .profil-sub { font-size: 15px; color: var(--tekst2); margin-top: 3px; }
+
+  /* TAB BAR */
+  .tab-bar { display: flex; gap: 6px; padding: 12px 16px 4px; }
+  .tab { flex: 1; padding: 9px 4px; text-align: center; font-size: 14px; font-weight: 500; border-radius: var(--radius-sm); border: 0.5px solid var(--kant); cursor: pointer; color: var(--tekst2); background: transparent; transition: all 0.15s; }
+  .tab.aktiv { background: var(--graa-mid); color: var(--tekst); border-color: transparent; font-weight: 600; }
+
+  /* TAB INDHOLD */
+  .tab-indhold { display: none; padding: 12px 16px 32px; }
+  .tab-indhold.aktiv { display: block; }
+
+  /* METRIC GRID */
+  .metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .metric-kort { background: var(--graa-lys); border-radius: var(--radius-sm); padding: 12px 14px; }
+  .metric-label { font-size: 13px; color: var(--tekst2); margin-bottom: 4px; font-weight: 500; }
+  .metric-vaerdi { font-size: 18px; font-weight: 600; color: var(--tekst); }
+  .metric-enhed { font-size: 13px; color: var(--tekst2); font-weight: 400; }
+
+  /* DATA KORT */
+  .data-kort { background: var(--kort); border: 0.5px solid var(--kant); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px; }
+  .data-raekke { display: flex; justify-content: space-between; align-items: flex-start; padding: 10px 0; border-bottom: 0.5px solid var(--kant); gap: 12px; }
+  .data-raekke:last-child { border-bottom: none; padding-bottom: 0; }
+  .data-noegle { font-size: 16px; color: var(--tekst2); flex-shrink: 0; }
+  .data-val { font-size: 16px; color: var(--tekst); text-align: right; line-height: 1.5; }
+
+  /* NOTE BOKS */
+  .note-boks { background: var(--graa-lys); border-radius: var(--radius-sm); padding: 13px 15px; font-size: 16px; color: var(--tekst); line-height: 1.7; margin-bottom: 10px; }
+
+  /* REDIGER MODAL */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 200; align-items: flex-end; }
+  .modal-overlay.aktiv { display: flex; }
+  .modal-boks { background: var(--kort); border-radius: 16px 16px 0 0; padding: 20px 16px 32px; width: 100%; }
+  .modal-titel { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
+  .modal-textarea { width: 100%; padding: 12px; border: 0.5px solid var(--kant); border-radius: var(--radius-sm); background: var(--bg); color: var(--tekst); font-size: 16px; font-family: inherit; line-height: 1.6; resize: vertical; min-height: 120px; outline: none; }
+  .modal-textarea:focus { border-color: var(--blaa-mid); }
+  .modal-knapper { display: flex; gap: 10px; margin-top: 12px; }
+  .modal-gem { flex: 1; padding: 13px; background: #1a1a18; color: white; border: none; border-radius: var(--radius-sm); font-size: 15px; font-weight: 600; cursor: pointer; }
+  .modal-gem:active { opacity: 0.8; }
+  .modal-annuller { flex: 1; padding: 13px; background: transparent; color: var(--tekst2); border: 0.5px solid var(--kant); border-radius: var(--radius-sm); font-size: 15px; cursor: pointer; }
+  .rediger-ikon { float: right; font-size: 14px; color: var(--blaa-mid); cursor: pointer; padding: 2px 6px; margin-top: -2px; }
+
+  /* LOADING / FEJL */
+  .status { text-align: center; padding: 48px 16px; color: var(--tekst2); }
+  .spinner { width: 32px; height: 32px; border: 2.5px solid var(--kant); border-top-color: var(--blaa-mid); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .fejl-boks { background: var(--graa-lys); border-radius: var(--radius); padding: 16px; margin: 16px; color: var(--tekst); font-size: 15px; line-height: 1.6; border: 0.5px solid var(--kant); }
+
+  /* INDSTILLINGER */
+  .indst-boks { background: var(--kort); border: 0.5px solid var(--kant); border-radius: var(--radius); padding: 16px; margin: 16px; }
+  .indst-label { font-size: 14px; color: var(--tekst2); margin-bottom: 6px; }
+  .indst-input { width: 100%; padding: 10px 12px; border: 0.5px solid var(--kant); border-radius: var(--radius-sm); background: var(--bg); color: var(--tekst); font-size: 14px; font-family: monospace; }
+  .indst-gem { width: 100%; margin-top: 10px; padding: 13px; background: #1a1a18; color: white; border: none; border-radius: var(--radius-sm); font-size: 15px; font-weight: 600; cursor: pointer; }
+  .indst-gem:active { opacity: 0.8; }
+  .indst-vejl { font-size: 13px; color: var(--tekst2); margin-top: 8px; line-height: 1.5; }
+
+  .ingen-ryttere { text-align: center; padding: 32px 16px; color: var(--tekst2); font-size: 15px; }
+</style>
 </head>
 <body>
 
-    <header class="app-header">
-        <img src="logo.png" alt="Mensch" onerror="this.style.display='none'">
-        <h1>Mensch Cycling</h1>
-    </header>
-
-    <div id="app">
-        <div id="loading">Henter data...<br><small>Tjek evt. din Web App URL i bunden.</small></div>
+<!-- LISTE VIEW -->
+<div id="liste-view">
+  <div class="topbar">
+    <img src="logo.png" class="topbar-logo" alt="Mensch Cycling">
+    <div class="topbar-titel">Mensch Cycling</div>
+    <div style="font-size:13px; color:var(--tekst2); cursor:pointer;" onclick="visIndstillinger()">⚙️</div>
+  </div>
+  <div id="liste-indhold">
+    <div class="status">
+      <div class="spinner"></div>
+      <div>Henter ryttere...</div>
     </div>
+  </div>
+</div>
 
-    <div class="settings-area">
-        <div onclick="document.querySelector('.settings-content').classList.toggle('open')" style="cursor:pointer; font-weight:bold; color:#666;">
-            ⚙️ Indstillinger (Klik for at ændre Google Script URL)
-        </div>
-        <div class="settings-content">
-            <label>Google Web App URL:</label>
-            <input type="text" id="url-input" placeholder="https://script.google.com/macros/s/.../exec">
-            <button onclick="saveUrl()" style="margin-top:5px; width:100%; padding:5px;">Gem & Opdater App</button>
-        </div>
+<!-- DETALJE VIEW -->
+<div id="detalje-view" class="detalje">
+  <div class="topbar">
+    <div class="tilbage-knap" onclick="visListe()">‹ Tilbage</div>
+    <div class="topbar-titel" id="detalje-topbar-navn"></div>
+  </div>
+
+  <div class="profil-header">
+    <div class="profil-avatar" id="profil-avatar"></div>
+    <div>
+      <div class="profil-navn" id="profil-navn"></div>
+      <div class="profil-sub" id="profil-sub"></div>
     </div>
+  </div>
+
+  <div class="tab-bar">
+    <div class="tab aktiv" onclick="skiftTab('tal', this)">Tal</div>
+    <div class="tab" onclick="skiftTab('profil', this)">Profil</div>
+    <div class="tab" onclick="skiftTab('saeson', this)">2026</div>
+  </div>
+
+  <div id="tab-tal" class="tab-indhold aktiv"></div>
+  <div id="tab-profil" class="tab-indhold"></div>
+  <div id="tab-saeson" class="tab-indhold"></div>
+</div>
+
+<!-- INDSTILLINGER VIEW -->
+<div id="indst-view" style="display:none;">
+  <div class="topbar">
+    <div class="tilbage-knap" onclick="visListe()">‹ Tilbage</div>
+    <div class="topbar-titel">Indstillinger</div>
+  </div>
+  <div class="indst-boks">
+    <div class="indst-label">Apps Script URL</div>
+    <input class="indst-input" id="api-url-input" type="url" placeholder="https://script.google.com/macros/s/.../exec">
+    <button class="indst-gem" onclick="gemUrl()">Gem og hent ryttere</button>
+    <div class="indst-vejl">Indsæt URL'en fra dit Google Apps Script deployment her.</div>
+  </div>
+</div>
+
+<!-- REDIGER MODAL -->
+<div class="modal-overlay" id="modal" onclick="lukkModal(event)">
+  <div class="modal-boks">
+    <div class="modal-titel" id="modal-titel">Rediger</div>
+    <textarea class="modal-textarea" id="modal-tekst" rows="5"></textarea>
+    <div class="modal-knapper">
+      <button class="modal-annuller" onclick="skjulModal()">Annuller</button>
+      <button class="modal-gem" onclick="gemFelt()">Gem i Google Sheet</button>
+    </div>
+  </div>
+</div>
 
 <script>
-    let WEB_APP_URL = localStorage.getItem('mensch_app_url') || '';
+var API_URL = localStorage.getItem("cykelcoach_api_url") || "";
+var rytterListe = [];
+var aktivSheetId = null;
+var aktivCelleRef = null;
+var aktivTab = "tal";
 
-    if (WEB_APP_URL) {
-        document.getElementById('url-input').value = WEB_APP_URL;
-        loadData();
-    }
+window.onload = function() {
+  if (API_URL) { hentRytterliste(); } else { visIndstillinger(); }
+};
 
-    function saveUrl() {
-        const newUrl = document.getElementById('url-input').value.trim();
-        if (newUrl) {
-            localStorage.setItem('mensch_app_url', newUrl);
-            location.reload();
-        }
-    }
+// ── NAVIGATION ────────────────────────────────────────────
+function visListe() {
+  document.getElementById("liste-view").style.display = "";
+  document.getElementById("detalje-view").style.display = "none";
+  document.getElementById("detalje-view").className = "detalje";
+  document.getElementById("indst-view").style.display = "none";
+}
+function visDetalje() {
+  document.getElementById("liste-view").style.display = "none";
+  document.getElementById("indst-view").style.display = "none";
+  document.getElementById("detalje-view").style.display = "";
+  document.getElementById("detalje-view").className = "";
+}
+function visIndstillinger() {
+  document.getElementById("liste-view").style.display = "none";
+  document.getElementById("detalje-view").style.display = "none";
+  document.getElementById("indst-view").style.display = "";
+  document.getElementById("api-url-input").value = localStorage.getItem("cykelcoach_api_url") || "";
+}
+function gemUrl() {
+  var url = document.getElementById("api-url-input").value.trim();
+  if (!url) return;
+  localStorage.setItem("cykelcoach_api_url", url);
+  API_URL = url;
+  visListe();
+  hentRytterliste();
+}
+function skiftTab(navn, el) {
+  aktivTab = navn;
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("aktiv"));
+  document.querySelectorAll(".tab-indhold").forEach(t => t.classList.remove("aktiv"));
+  el.classList.add("aktiv");
+  document.getElementById("tab-" + navn).classList.add("aktiv");
+}
+function genopretTab(navn) {
+  var tabs = document.querySelectorAll(".tab");
+  var navne = ["tal","profil","saeson"];
+  document.querySelectorAll(".tab-indhold").forEach(t => t.classList.remove("aktiv"));
+  tabs.forEach(t => t.classList.remove("aktiv"));
+  var idx = navne.indexOf(navn);
+  if (idx >= 0) {
+    tabs[idx].classList.add("aktiv");
+    document.getElementById("tab-" + navn).classList.add("aktiv");
+  }
+}
 
-    async function loadData() {
-        try {
-            const response = await fetch(WEB_APP_URL, { method: 'GET', redirect: 'follow' });
-            if (!response.ok) throw new Error("Netværksfejl");
-            const data = await response.json();
-            renderApp(data);
-        } catch (error) {
-            console.error(error);
-            document.getElementById('loading').innerHTML = "Fejl ved indlæsning.<br><small>Årsag: " + error.message + "</small>";
-        }
-    }
+// ── DATA HENTNING ─────────────────────────────────────────
+function hentRytterliste() {
+  document.getElementById("liste-indhold").innerHTML =
+    '<div class="status"><div class="spinner"></div><div>Henter ryttere...</div></div>';
+  fetch(API_URL + "?handling=liste")
+    .then(r => r.json())
+    .then(data => {
+      if (data.fejl) throw new Error(data.fejl);
+      rytterListe = data.ryttere || [];
+      visRytterliste(rytterListe);
+    })
+    .catch(err => {
+      document.getElementById("liste-indhold").innerHTML =
+        '<div class="fejl-boks">Kunne ikke hente data.<br><br><strong>Fejl:</strong> ' + err.message +
+        '<br><br>Tjek din Apps Script URL under ⚙️</div>';
+    });
+}
 
-    function renderApp(riders) {
-        const app = document.getElementById('app');
-        app.innerHTML = '';
+function hentRytterData(id, bevarTab) {
+  aktivSheetId = id;
+  var tabEfter = bevarTab || "tal";
+  if (!bevarTab) aktivTab = "tal";
 
-        riders.forEach(rider => {
-            const card = document.createElement('div');
-            card.className = 'rider-card';
-            
-            // Sikker formatering (håndterer tomme celler)
-            const cpVal = Math.round(parseFloat(rider.cells.cp || 0));
-            const wPrime = parseFloat(rider.cells.w_prime || 0).toFixed(2);
-            const relCP = parseFloat(rider.cells.relativCP || 0).toFixed(2);
-            const formatPct = (val) => (parseFloat(val || 0) * 100).toFixed(1) + '%';
-            const formatWatt = (val) => Math.round(parseFloat(val || 0));
+  visDetalje();
+  if (!bevarTab) {
+    document.querySelectorAll(".tab").forEach((t,i) => t.classList.toggle("aktiv", i===0));
+    document.querySelectorAll(".tab-indhold").forEach((t,i) => t.classList.toggle("aktiv", i===0));
+  }
 
-            card.innerHTML = `
-                <div class="rider-summary" onclick="toggleDetails(this)">
-                    <div><span class="label-small">Rytter</span><strong>${rider.name}</strong></div>
-                    <div><span class="label-small">Alder</span>${rider.cells.alder || '-'}</div>
-                    <div><span class="label-small">Klasse</span>${rider.cells.klasse || '-'}</div>
-                    <div style="color: #ccc;">▼</div>
-                </div>
-                
-                <div class="rider-details">
-                    <div class="tabs">
-                        <div class="tab active" onclick="showTab(this, 'tal', '${rider.id}')">Tal</div>
-                        <div class="tab" onclick="showTab(this, 'profil', '${rider.id}')">Profil</div>
-                        <div class="tab" onclick="showTab(this, 'saeson', '${rider.id}')">Sæson</div>
-                        <div class="tab" onclick="showTab(this, 'hist', '${rider.id}')">Historisk</div>
-                    </div>
+  fetch(API_URL + "?handling=rytter&id=" + encodeURIComponent(id))
+    .then(r => r.json())
+    .then(d => {
+      if (d.fejl) throw new Error(d.fejl);
+      bygTalTab(d);
+      bygProfilTab(d);
+      bygSaesonTab(d);
+      var init = hentInitialer(d.navn);
+      document.getElementById("detalje-topbar-navn").textContent = d.navn;
+      document.getElementById("profil-avatar").textContent = init;
+      document.getElementById("profil-navn").textContent = d.navn;
+      document.getElementById("profil-sub").textContent =
+        [d.alder ? d.alder + " år" : "", d.niveau ? "Niveau " + d.niveau : "", d.phenotype].filter(Boolean).join(" · ");
+      if (bevarTab) genopretTab(tabEfter);
+    })
+    .catch(err => {
+      document.getElementById("tab-tal").innerHTML =
+        '<div class="fejl-boks">Fejl: ' + err.message + '</div>';
+    });
+}
 
-                    <div id="tal-${rider.id}" class="content active">
-                        <div class="data-grid">
-                            <div class="input-group"><label>CP (Watt)</label><input type="text" disabled value="${cpVal}"></div>
-                            <div class="input-group"><label>W' (kJ)</label><input type="text" disabled value="${wPrime}"></div>
-                            <div class="input-group"><label>Relativ CP</label><input type="text" disabled value="${relCP}"></div>
-                            <div class="input-group"><label>Vægt (kg)</label><input type="text" id="vaegt-${rider.id}" value="${rider.cells.vaegt}"></div>
-                            
-                            <div class="section-title">CP Test Resultater</div>
-                            <div class="input-group"><label>Test (Watt)</label></div><div class="input-group"><label>Forventet watt</label></div><div class="input-group"><label>Afvigelse %</label></div><div class="input-group"><label>Tid (sek)</label></div>
+// ── BYGG FANER ────────────────────────────────────────────
+function bygTalTab(d) {
+  var cpKgVis = formatCpKg(d.cpKg);
+  document.getElementById("tab-tal").innerHTML =
+    sektionLabel("Performance") +
+    '<div class="metric-grid">' +
+      metricHtml("CP", d.cp, "W") +
+      metricHtml("CP relativ", cpKgVis, "W/kg") +
+      metricHtml("W'", wPrimKJ(d.wPrim), "kJ") +
+      metricHtml("VO2max", d.vo2max, "ml/kg") +
+    '</div>' +
+    sektionLabel("Antropometri") +
+    '<div class="data-kort">' +
+      dataRaekke("Højde", d.hojde ? d.hojde + " cm" : "–", null) +
+      dataRaekke("Vægt", d.vaegt ? d.vaegt + " kg" : "–", null) +
+      dataRaekke("Fødselsdato", d.fodselsdato || "–", null) +
+      dataRaekke("Volumen sidste sæson", d.volumen || "–", "B14") +
+    '</div>';
+}
 
-                            <div class="input-group"><input type="text" id="t3-${rider.id}" value="${rider.cells.test3min}"></div>
-                            <div class="input-group"><input type="text" disabled value="${formatWatt(rider.cells.test3min_exp)}"></div>
-                            <div class="input-group"><input type="text" disabled value="${formatPct(rider.cells.test3min_pct)}"></div>
-                            <div class="input-group"><input type="text" disabled value="${rider.cells.test3min_tid}"></div>
+function bygProfilTab(d) {
+  document.getElementById("tab-profil").innerHTML =
+    sektionLabel("Mål") + noteBoks(d.maal, "Mål", "B12") +
+    sektionLabel("Personlighed") + noteBoks(d.personlighed, "Personlighed", "B16") +
+    sektionLabel("Vurdering") + noteBoks(d.vurdering, "Vurdering", "B18") +
+    sektionLabel("Historik") + noteBoks(d.historik, "Historik", "B13") +
+    sektionLabel("Ressourcer") + noteBoks(d.ressourcer, "Ressourcer", "B15") +
+    sektionLabel("Andet") + noteBoks(d.andet, "Andet", "B17");
+}
 
-                            <div class="input-group"><input type="text" id="t6-${rider.id}" value="${rider.cells.test6min}"></div>
-                            <div class="input-group"><input type="text" disabled value="${formatWatt(rider.cells.test6min_exp)}"></div>
-                            <div class="input-group"><input type="text" disabled value="${formatPct(rider.cells.test6min_pct)}"></div>
-                            <div class="input-group"><input type="text" disabled value="${rider.cells.test6min_tid}"></div>
+function bygSaesonTab(d) {
+  var cpKg2026Vis = formatCpKg(d.cpKg2026);
+  document.getElementById("tab-saeson").innerHTML =
+    sektionLabel("Mål 2026") + noteBoks(d.maal2026, "Mål 2026", "B24") +
+    sektionLabel("Watttal 2026") +
+    '<div class="metric-grid">' +
+      metricHtml("CP", d.cp2026, "W") +
+      metricHtml("CP relativ", cpKg2026Vis, "W/kg") +
+      metricHtml("W'", d.wPrim2026 ? Number(String(d.wPrim2026).replace(/\./g,"").replace(",",".")).toLocaleString("da") : "", "J") +
+      metricHtml("Phenotype", d.phenotype2026, "") +
+    '</div>' +
+    sektionLabel("Fysisk indsats") + noteBoks(d.fysisk2026, "Fysisk indsats", "B26") +
+    sektionLabel("Anden indsats") + noteBoks(d.andet2026, "Anden indsats", "B27") +
+    sektionLabel("Noter") + noteBoks(d.noter2026, "Noter 2026", "B25");
+}
 
-                            <div class="input-group"><input type="text" id="t12-${rider.id}" value="${rider.cells.test12min}"></div>
-                            <div class="input-group"><input type="text" disabled value="${formatWatt(rider.cells.test12min_exp)}"></div>
-                            <div class="input-group"><input type="text" disabled value="${formatPct(rider.cells.test12min_pct)}"></div>
-                            <div class="input-group"><input type="text" disabled value="${rider.cells.test12min_tid}"></div>
-                        </div>
-                        <button class="save-btn" onclick="saveRider('${rider.id}')">Gem ændringer</button>
-                    </div>
-                    
-                    <div id="profil-${rider.id}" class="content">
-                        <textarea id="prof-${rider.id}" rows="10" style="width:100%; border:1px solid #ddd; border-radius:4px; padding:10px;">${rider.cells.profil || ''}</textarea>
-                        <button class="save-btn" onclick="saveRider('${rider.id}')">Gem Profil</button>
-                    </div>
-                    <div id="saeson-${rider.id}" class="content">Sæsonplanlægning...</div>
-                    <div id="hist-${rider.id}" class="content">
-                        <textarea id="hist-text-${rider.id}" rows="6" style="width:100%; border:1px solid #ddd; border-radius:4px; padding:10px;">${rider.cells.historik || ''}</textarea>
-                        <button class="save-btn" onclick="saveRider('${rider.id}')">Gem Historik</button>
-                    </div>
-                </div>
-            `;
-            app.appendChild(card);
-        });
-    }
+// ── HTML HJÆLPERE ─────────────────────────────────────────
+function sektionLabel(tekst) {
+  return '<div class="sektion-label" style="padding:10px 0 6px;">' + tekst + '</div>';
+}
+function metricHtml(label, vaerdi, enhed) {
+  return '<div class="metric-kort">' +
+    '<div class="metric-label">' + label + '</div>' +
+    '<div class="metric-vaerdi">' + (vaerdi || "–") +
+    (vaerdi && enhed ? ' <span class="metric-enhed">' + enhed + '</span>' : '') +
+    '</div></div>';
+}
+function dataRaekke(noegle, vaerdi, celleRef) {
+  var rediger = celleRef
+    ? '<span class="rediger-ikon" onclick="aabneModal(\'' + celleRef + '\',\'' + noegle + '\',\'' + vaerdi.replace(/'/g,"\\'") + '\')">✎</span>'
+    : '';
+  return '<div class="data-raekke">' +
+    '<div class="data-noegle">' + noegle + '</div>' +
+    '<div class="data-val">' + rediger + vaerdi + '</div></div>';
+}
+function noteBoks(tekst, label, celleRef) {
+  var visning = tekst || "–";
+  var rediger = celleRef
+    ? '<span class="rediger-ikon" onclick="aabneModal(\'' + celleRef + '\',\'' + label + '\',\'' + (tekst||"").replace(/'/g,"\\'").replace(/\n/g,"\\n") + '\')">✎</span>'
+    : '';
+  return '<div class="note-boks">' + rediger + visning + '</div>';
+}
 
-    function toggleDetails(el) {
-        const details = el.nextElementSibling;
-        const isOpen = details.classList.contains('open');
-        document.querySelectorAll('.rider-details').forEach(d => d.classList.remove('open'));
-        if (!isOpen) details.classList.add('open');
-    }
+// ── NIVEAU BADGE ──────────────────────────────────────────
+function niveauBadge(niveau) {
+  if (!niveau) return '';
+  var klasse = "badge-anden";
+  var n = niveau.trim();
+  if (n === "A") klasse = "badge-A";
+  else if (n === "B") klasse = "badge-B";
+  else if (n === "U19") klasse = "badge-U19";
+  else if (n === "U17") klasse = "badge-U17";
+  else if (n === "Master") klasse = "badge-Master";
+  else if (n === "Motion") klasse = "badge-Motion";
+  return '<span class="badge ' + klasse + '">' + n + '</span>';
+}
 
-    function showTab(tabEl, tabName, id) {
-        const card = tabEl.closest('.rider-details');
-        card.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        card.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
-        tabEl.classList.add('active');
-        card.querySelector(`#${tabName}-${id}`).classList.add('active');
-    }
+// ── REDIGER MODAL ─────────────────────────────────────────
+function aabneModal(celleRef, label, nuvaerende) {
+  aktivCelleRef = celleRef;
+  document.getElementById("modal-titel").textContent = "Rediger: " + label;
+  document.getElementById("modal-tekst").value = nuvaerende.replace(/\\n/g, "\n");
+  document.getElementById("modal").classList.add("aktiv");
+  setTimeout(function() { document.getElementById("modal-tekst").focus(); }, 100);
+}
+function skjulModal() {
+  document.getElementById("modal").classList.remove("aktiv");
+  aktivCelleRef = null;
+}
+function lukkModal(e) {
+  if (e.target === document.getElementById("modal")) skjulModal();
+}
+function gemFelt() {
+  if (!aktivCelleRef || !aktivSheetId) return;
+  var nyTekst = document.getElementById("modal-tekst").value;
+  var gemKnap = document.querySelector(".modal-gem");
+  var tabAtBevare = aktivTab;
+  gemKnap.textContent = "Gemmer...";
+  gemKnap.disabled = true;
+  fetch(API_URL + "?handling=gem&id=" + encodeURIComponent(aktivSheetId) +
+    "&celle=" + encodeURIComponent(aktivCelleRef) +
+    "&vaerdi=" + encodeURIComponent(nyTekst))
+    .then(r => r.json())
+    .then(data => {
+      if (data.fejl) throw new Error(data.fejl);
+      skjulModal();
+      hentRytterData(aktivSheetId, tabAtBevare);
+    })
+    .catch(err => {
+      alert("Kunne ikke gemme: " + err.message);
+    })
+    .finally(() => {
+      gemKnap.textContent = "Gem i Google Sheet";
+      gemKnap.disabled = false;
+    });
+}
 
-    async function saveRider(id) {
-        const btn = event.target;
-        btn.innerText = "Gemmer...";
-        const payload = {
-            id: id,
-            B7: document.getElementById(`vaegt-${id}`).value,
-            B14: document.getElementById(`t3-${id}`).value,
-            B15: document.getElementById(`t6-${id}`).value,
-            B16: document.getElementById(`t12-${id}`).value,
-            profil: document.getElementById(`prof-${id}`) ? document.getElementById(`prof-${id}`).value : undefined,
-            historik: document.getElementById(`hist-text-${id}`) ? document.getElementById(`hist-text-${id}`).value : undefined
-        };
-        try {
-            await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
-            btn.innerText = "Gemt!";
-            setTimeout(() => btn.innerText = "GEM ÆNDRINGER", 2000);
-        } catch (e) { btn.innerText = "Fejl!"; }
-    }
+// ── RENDER LISTE ──────────────────────────────────────────
+function visRytterliste(ryttere) {
+  var el = document.getElementById("liste-indhold");
+  if (!ryttere || ryttere.length === 0) {
+    el.innerHTML = '<div class="ingen-ryttere">Ingen ryttere fundet i mappen.</div>';
+    return;
+  }
+  var html = '<div class="soeg-wrapper">' +
+    '<input class="soeg-felt" type="search" placeholder="Søg rytter..." oninput="soegRyttere(this.value)">' +
+    '</div>' +
+    '<div class="sektion-label">Hold (' + ryttere.length + ' ryttere)</div>' +
+    '<div class="rytter-liste" id="rytter-liste-items">';
+  ryttere.forEach(r => { html += rytterKortHtml(r); });
+  html += '</div>';
+  el.innerHTML = html;
+}
+function rytterKortHtml(r) {
+  var init = hentInitialer(r.navn);
+  var cpKgVis = r.cpKg ? formatCpKg(r.cpKg) : "";
+  var cpTekst = r.cp ? r.cp + " W · " + cpKgVis + " W/kg" : "Ingen data endnu";
+  return '<div class="rytter-kort" onclick="hentRytterData(\'' + r.id + '\')">' +
+    '<div class="avatar">' + init + '</div>' +
+    '<div class="rytter-info">' +
+      '<div class="rytter-navn">' + r.navn + '</div>' +
+      '<div class="rytter-sub">' + cpTekst + (r.phenotype ? ' · ' + r.phenotype : '') + '</div>' +
+    '</div>' +
+    '<div class="rytter-meta">' + niveauBadge(r.niveau) + '</div>' +
+    '<div class="chevron">›</div></div>';
+}
+function soegRyttere(soegord) {
+  var lower = soegord.toLowerCase();
+  var filtreret = rytterListe.filter(r => r.navn.toLowerCase().includes(lower));
+  var container = document.getElementById("rytter-liste-items");
+  if (!container) return;
+  container.innerHTML = filtreret.map(rytterKortHtml).join("");
+}
+
+// ── HJÆLPEFUNKTIONER ──────────────────────────────────────
+function hentInitialer(navn) {
+  if (!navn) return "?";
+  var dele = navn.trim().split(/\s+/);
+  if (dele.length >= 2) return (dele[0][0] + dele[dele.length-1][0]).toUpperCase();
+  return navn.substring(0, 2).toUpperCase();
+}
+function formatCpKg(val) {
+  if (!val) return "";
+  var num = parseFloat(String(val).replace(",", "."));
+  if (isNaN(num)) return val;
+  return num.toFixed(2);
+}
+function wPrimKJ(val) {
+  if (!val) return "";
+  var num = parseFloat(String(val).replace(/\./g, "").replace(",", "."));
+  if (isNaN(num)) return val;
+  return (num / 1000).toFixed(1);
+}
 </script>
 </body>
 </html>
