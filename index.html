@@ -1,374 +1,126 @@
 <!DOCTYPE html>
-<html lang="da">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Mensch Cycling">
-<title>Mensch Cycling</title>
-<style>
-  :root {
-    --blaa: #185FA5;
-    --blaa-lys: #E6F1FB;
-    --blaa-mid: #378ADD;
-    --blaa-mork: #0C447C;
-    --graa-lys: #f0f0ee;
-    --graa-mid: #e4e4e1;
-    --graa-mork: #5F5E5A;
-    --bg: #f5f5f3;
-    --kort: #ffffff;
-    --tekst: #1a1a18;
-    --tekst2: #5F5E5A;
-    --kant: rgba(0,0,0,0.1);
-    --radius: 12px;
-    --radius-sm: 8px;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #1a1a18;
-      --kort: #2a2a28;
-      --tekst: #e8e6de;
-      --tekst2: #9c9a92;
-      --kant: rgba(255,255,255,0.1);
-      --blaa-lys: #0C447C;
-      --graa-lys: #2e2e2c;
-      --graa-mid: #383836;
-    }
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--tekst); font-size: 16px; }
-
-  /* TOP BAR */
-  .topbar { background: var(--kort); border-bottom: 0.5px solid var(--kant); padding: 12px 16px; display: flex; align-items: center; gap: 10px; position: sticky; top: 0; z-index: 100; }
-  .topbar-logo { height: 32px; width: auto; display: block; }
-  .topbar-titel { font-size: 17px; font-weight: 600; flex: 1; }
-  .tilbage-knap { font-size: 15px; color: var(--blaa-mid); cursor: pointer; padding: 4px 0; white-space: nowrap; }
-
-  /* SØGEFELT */
-  .soeg-wrapper { padding: 12px 16px; }
-  .soeg-felt { width: 100%; padding: 10px 14px; border-radius: var(--radius-sm); border: 0.5px solid var(--kant); background: var(--kort); color: var(--tekst); font-size: 16px; outline: none; }
-  .soeg-felt:focus { border-color: var(--blaa-mid); }
-
-  /* SEKTION LABEL */
-  .sektion-label { font-size: 12px; font-weight: 600; color: var(--tekst2); text-transform: uppercase; letter-spacing: 0.06em; padding: 8px 16px 6px; }
-
-  /* RYTTER LISTE */
-  .rytter-liste { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 8px; }
-  .rytter-kort { background: var(--kort); border: 0.5px solid var(--kant); border-radius: var(--radius); padding: 14px 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; transition: opacity 0.1s; }
-  .rytter-kort:active { opacity: 0.7; }
-  .avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--graa-mid); color: var(--tekst); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; flex-shrink: 0; }
-  .rytter-info { flex: 1; min-width: 0; }
-  .rytter-navn { font-size: 16px; font-weight: 600; color: var(--tekst); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .rytter-sub { font-size: 14px; color: var(--tekst2); margin-top: 2px; }
-  .rytter-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
-  .badge { font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 20px; white-space: nowrap; }
-  .badge-A    { background: #1a1a18; color: #ffffff; }
-  .badge-B    { background: #2d6a2d; color: #ffffff; }
-  .badge-U19  { background: #1a1a18; color: #ffffff; }
-  .badge-U17  { background: #e07b00; color: #1a1a18; }
-  .badge-Master { background: #d4b800; color: #1a1a18; }
-  .badge-Motion { background: #a8d8ea; color: #1a1a18; }
-  .badge-anden { background: var(--graa-mid); color: var(--tekst); }
-  .chevron { color: var(--tekst2); font-size: 18px; margin-left: 2px; }
-
-  /* DETALJE VIEW */
-  .detalje { display: none; }
-  .profil-header { background: var(--kort); border-bottom: 0.5px solid var(--kant); padding: 16px; display: flex; align-items: center; gap: 14px; }
-  .profil-avatar { width: 56px; height: 56px; border-radius: 50%; background: var(--graa-mid); color: var(--tekst); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 20px; flex-shrink: 0; }
-  .profil-navn { font-size: 20px; font-weight: 700; }
-  .profil-sub { font-size: 15px; color: var(--tekst2); margin-top: 3px; }
-
-  /* TAB BAR */
-  .tab-bar { display: flex; gap: 4px; padding: 12px 16px 4px; overflow-x: auto; }
-  .tab { flex: 1; min-width: 80px; padding: 9px 4px; text-align: center; font-size: 13px; font-weight: 500; border-radius: var(--radius-sm); border: 0.5px solid var(--kant); cursor: pointer; color: var(--tekst2); background: transparent; transition: all 0.15s; white-space: nowrap; }
-  .tab.aktiv { background: var(--graa-mid); color: var(--tekst); border-color: transparent; font-weight: 600; }
-
-  /* TAB INDHOLD */
-  .tab-indhold { display: none; padding: 12px 16px 32px; }
-  .tab-indhold.aktiv { display: block; }
-
-  /* METRIC GRID */
-  .metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-  .metric-kort { background: var(--graa-lys); border-radius: var(--radius-sm); padding: 12px 14px; }
-  .metric-label { font-size: 13px; color: var(--tekst2); margin-bottom: 4px; font-weight: 500; }
-  .metric-vaerdi { font-size: 18px; font-weight: 600; color: var(--tekst); }
-  .metric-enhed { font-size: 13px; color: var(--tekst2); font-weight: 400; }
-
-  /* DATA KORT */
-  .data-kort { background: var(--kort); border: 0.5px solid var(--kant); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px; }
-  .data-raekke { display: flex; justify-content: space-between; align-items: flex-start; padding: 10px 0; border-bottom: 0.5px solid var(--kant); gap: 12px; }
-  .data-raekke:last-child { border-bottom: none; padding-bottom: 0; }
-  .data-noegle { font-size: 15px; color: var(--tekst2); flex: 1; }
-  .data-val { font-size: 15px; color: var(--tekst); text-align: right; line-height: 1.5; font-weight: 500; }
-
-  /* NOTE BOKS */
-  .note-boks { background: var(--graa-lys); border-radius: var(--radius-sm); padding: 13px 15px; font-size: 16px; color: var(--tekst); line-height: 1.7; margin-bottom: 10px; position: relative; }
-
-  /* REDIGER MODAL */
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 200; align-items: flex-end; }
-  .modal-overlay.aktiv { display: flex; }
-  .modal-boks { background: var(--kort); border-radius: 16px 16px 0 0; padding: 20px 16px 32px; width: 100%; }
-  .modal-titel { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
-  .modal-textarea { width: 100%; padding: 12px; border: 0.5px solid var(--kant); border-radius: var(--radius-sm); background: var(--bg); color: var(--tekst); font-size: 16px; font-family: inherit; line-height: 1.6; resize: vertical; min-height: 120px; outline: none; }
-  .modal-textarea:focus { border-color: var(--blaa-mid); }
-  .modal-knapper { display: flex; gap: 10px; margin-top: 12px; }
-  .modal-gem { flex: 1; padding: 13px; background: #1a1a18; color: white; border: none; border-radius: var(--radius-sm); font-size: 15px; font-weight: 600; cursor: pointer; }
-  .modal-gem:active { opacity: 0.8; }
-  .modal-annuller { flex: 1; padding: 13px; background: transparent; color: var(--tekst2); border: 0.5px solid var(--kant); border-radius: var(--radius-sm); font-size: 15px; cursor: pointer; }
-  .rediger-ikon { color: var(--blaa-mid); cursor: pointer; padding-left: 8px; font-size: 14px; }
-
-  /* LOADING / FEJL */
-  .status { text-align: center; padding: 48px 16px; color: var(--tekst2); }
-  .spinner { width: 32px; height: 32px; border: 2.5px solid var(--kant); border-top-color: var(--blaa-mid); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  .indst-boks { background: var(--kort); border: 0.5px solid var(--kant); border-radius: var(--radius); padding: 16px; margin: 16px; }
-  .indst-label { font-size: 14px; color: var(--tekst2); margin-bottom: 6px; }
-  .indst-input { width: 100%; padding: 10px 12px; border: 0.5px solid var(--kant); border-radius: var(--radius-sm); background: var(--bg); color: var(--tekst); font-size: 14px; }
-  .indst-gem { width: 100%; margin-top: 10px; padding: 13px; background: #1a1a18; color: white; border: none; border-radius: var(--radius-sm); font-size: 15px; font-weight: 600; cursor: pointer; }
-</style>
+    <meta charset="UTF-8">
+    <title>Mensch Cycling Coach</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding: 10px; }
+        .rider-card { background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; overflow: hidden; }
+        .header { background: #1a1a1a; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .tabs { display: flex; background: #eee; gap: 2px; }
+        .tab { flex: 1; padding: 12px; text-align: center; cursor: pointer; border: none; background: #ddd; font-weight: bold; }
+        .tab.active { background: white; border-bottom: 3px solid #e74c3c; }
+        .content { padding: 15px; display: none; }
+        .content.active { display: block; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .input-group { margin-bottom: 10px; }
+        label { display: block; font-size: 11px; color: #666; margin-bottom: 3px; }
+        input, textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        input:disabled { background: #f9f9f9; color: #888; border: 1px dashed #ccc; }
+        .save-btn { background: #27ae60; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
+        #loading { text-align: center; padding: 50px; font-weight: bold; }
+    </style>
 </head>
 <body>
 
-<div id="liste-view">
-  <div class="topbar">
-    <div class="topbar-titel">Mensch Cycling</div>
-    <div style="font-size:13px; color:var(--tekst2); cursor:pointer;" onclick="visIndstillinger()">⚙️</div>
-  </div>
-  <div id="liste-indhold">
-    <div class="status"><div class="spinner"></div><div>Henter ryttere...</div></div>
-  </div>
-</div>
-
-<div id="detalje-view" class="detalje">
-  <div class="topbar">
-    <div class="tilbage-knap" onclick="visListe()">‹ Tilbage</div>
-    <div class="topbar-titel" id="detalje-topbar-navn"></div>
-  </div>
-
-  <div class="profil-header">
-    <div class="profil-avatar" id="profil-avatar"></div>
-    <div>
-      <div class="profil-navn" id="profil-navn"></div>
-      <div class="profil-sub" id="profil-sub"></div>
-    </div>
-  </div>
-
-  <div class="tab-bar">
-    <div class="tab aktiv" onclick="skiftTab('tal', this)">Tal</div>
-    <div class="tab" onclick="skiftTab('profil', this)">Profil</div>
-    <div class="tab" onclick="skiftTab('saeson', this)">Sæson</div>
-    <div class="tab" onclick="skiftTab('historisk', this)">Historisk</div>
-  </div>
-
-  <div id="tab-tal" class="tab-indhold aktiv"></div>
-  <div id="tab-profil" class="tab-indhold"></div>
-  <div id="tab-saeson" class="tab-indhold"></div>
-  <div id="tab-historisk" class="tab-indhold"></div>
-</div>
-
-<div id="indst-view" style="display:none;">
-  <div class="topbar"><div class="tilbage-knap" onclick="visListe()">‹ Tilbage</div><div class="topbar-titel">Indstillinger</div></div>
-  <div class="indst-boks">
-    <div class="indst-label">Apps Script URL</div>
-    <input class="indst-input" id="api-url-input" type="url">
-    <button class="indst-gem" onclick="gemUrl()">Gem</button>
-  </div>
-</div>
-
-<div class="modal-overlay" id="modal" onclick="lukkModal(event)">
-  <div class="modal-boks">
-    <div class="modal-titel" id="modal-titel">Rediger</div>
-    <textarea class="modal-textarea" id="modal-tekst"></textarea>
-    <div class="modal-knapper">
-      <button class="modal-annuller" onclick="skjulModal()">Annuller</button>
-      <button class="modal-gem" onclick="gemFelt()">Gem i Google Sheet</button>
-    </div>
-  </div>
+<div id="app">
+    <div id="loading">Henter rytterdata fra Google Sheets...</div>
 </div>
 
 <script>
-var API_URL = localStorage.getItem("cykelcoach_api_url") || "";
-var rytterListe = [];
-var aktivSheetId = null;
-var aktivCelleRef = null;
-var aktivTab = "tal";
+    const WEB_APP_URL = 'INDSET_DIN_APPS_SCRIPT_URL_HER'; 
 
-window.onload = function() {
-  if (API_URL) { hentRytterliste(); } else { visIndstillinger(); }
-};
+    async function loadData() {
+        try {
+            const response = await fetch(WEB_APP_URL);
+            const data = await response.json();
+            renderApp(data);
+        } catch (error) {
+            document.getElementById('loading').innerText = "Fejl ved indlæsning. Tjek din Web App URL.";
+        }
+    }
 
-function visListe() {
-  document.getElementById("liste-view").style.display = "";
-  document.getElementById("detalje-view").style.display = "none";
-  document.getElementById("indst-view").style.display = "none";
-}
-function visDetalje() {
-  document.getElementById("liste-view").style.display = "none";
-  document.getElementById("detalje-view").style.display = "";
-}
-function visIndstillinger() {
-  document.getElementById("liste-view").style.display = "none";
-  document.getElementById("detalje-view").style.display = "none";
-  document.getElementById("indst-view").style.display = "";
-}
-function gemUrl() {
-  var url = document.getElementById("api-url-input").value.trim();
-  if (!url) return;
-  localStorage.setItem("cykelcoach_api_url", url);
-  API_URL = url;
-  visListe();
-  hentRytterliste();
-}
+    function renderApp(riders) {
+        const app = document.getElementById('app');
+        app.innerHTML = '';
 
-function skiftTab(navn, el) {
-  aktivTab = navn;
-  document.querySelectorAll(".tab").forEach(t => t.classList.remove("aktiv"));
-  document.querySelectorAll(".tab-indhold").forEach(t => t.classList.remove("aktiv"));
-  el.classList.add("aktiv");
-  document.getElementById("tab-" + navn).classList.add("aktiv");
-}
+        riders.forEach(rider => {
+            const card = document.createElement('div');
+            card.className = 'rider-card';
+            card.innerHTML = `
+                <div class="header">
+                    <strong>${rider.name}</strong>
+                    <button class="save-btn" onclick="saveRider('${rider.id}')">Gem</button>
+                </div>
+                <div class="tabs">
+                    <div class="tab active" onclick="showTab(this, 'tal', '${rider.id}')">Tal</div>
+                    <div class="tab" onclick="showTab(this, 'profil', '${rider.id}')">Profil</div>
+                    <div class="tab" onclick="showTab(this, 'saeson', '${rider.id}')">Sæson</div>
+                    <div class="tab" onclick="showTab(this, 'hist', '${rider.id}')">Historisk</div>
+                </div>
+                
+                <div id="tal-${rider.id}" class="content active">
+                    <div class="grid">
+                        <div class="input-group"><label>Status A9 (Formel)</label><input type="text" disabled value="${rider.cells.A9}"></div>
+                        <div class="input-group"><label>Status B9 (Formel)</label><input type="text" disabled value="${rider.cells.B9}"></div>
+                        <div class="input-group"><label>Status C9 (Formel)</label><input type="text" disabled value="${rider.cells.C9}"></div>
+                        <div class="input-group"><label>Basis B7</label><input type="text" id="B7-${rider.id}" value="${rider.cells.B7}"></div>
+                        <div class="input-group"><label>Data B14</label><input type="text" id="B14-${rider.id}" value="${rider.cells.B14}"></div>
+                        <div class="input-group"><label>Data B15</label><input type="text" id="B15-${rider.id}" value="${rider.cells.B15}"></div>
+                        <div class="input-group"><label>Data B16</label><input type="text" id="B16-${rider.id}" value="${rider.cells.B16}"></div>
+                    </div>
+                </div>
 
-function genopretTab(navn) {
-  var tabs = document.querySelectorAll(".tab");
-  var navne = ["tal","profil","saeson","historisk"];
-  var idx = navne.indexOf(navn);
-  if (idx >= 0) {
-    tabs[idx].click();
-  }
-}
+                <div id="profil-${rider.id}" class="content">
+                    <label>Profil Information</label>
+                    <textarea rows="4">${rider.cells.profil}</textarea>
+                </div>
 
-function hentRytterliste() {
-  fetch(API_URL + "?handling=liste")
-    .then(r => r.json())
-    .then(data => {
-      rytterListe = data.ryttere || [];
-      visRytterliste(rytterListe);
-    })
-    .catch(err => {
-      document.getElementById("liste-indhold").innerHTML = '<div class="fejl-boks">Fejl ved hentning. Tjek URL.</div>';
-    });
-}
+                <div id="saeson-${rider.id}" class="content">
+                    <p style="font-size: 13px; color: #666;">Sæsonplanlægning (Data fra række 25-35)</p>
+                </div>
 
-function hentRytterData(id, bevarTab) {
-  aktivSheetId = id;
-  var tabAtGenoprette = bevarTab || "tal";
-  visDetalje();
+                <div id="hist-${rider.id}" class="content">
+                    <label>Historik (Række 39-40)</label>
+                    <textarea id="hist-${rider.id}-text" rows="4">${rider.cells.historik}</textarea>
+                </div>
+            `;
+            app.appendChild(card);
+        });
+    }
 
-  fetch(API_URL + "?handling=rytter&id=" + encodeURIComponent(id))
-    .then(r => r.json())
-    .then(d => {
-      bygTalTab(d);
-      bygProfilTab(d);
-      bygSaesonTab(d);
-      bygHistoriskTab(d);
-      
-      document.getElementById("detalje-topbar-navn").textContent = d.navn;
-      document.getElementById("profil-avatar").textContent = hentInitialer(d.navn);
-      document.getElementById("profil-navn").textContent = d.navn;
-      document.getElementById("profil-sub").textContent = [d.alder + " år", d.niveau, d.phenotype].filter(Boolean).join(" · ");
-      
-      if (bevarTab) genopretTab(tabAtGenoprette);
-    });
-}
+    function showTab(tabEl, tabName, id) {
+        const card = tabEl.closest('.rider-card');
+        card.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        card.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+        tabEl.classList.add('active');
+        card.querySelector(`#${tabName}-${id}`).classList.add('active');
+    }
 
-function bygTalTab(d) {
-  document.getElementById("tab-tal").innerHTML =
-    sektionLabel("CP & Testresultater") +
-    '<div class="metric-grid">' +
-      metricHtml("CP", d.cp, "W") +
-      metricHtml("CP rel.", formatCpKg(d.cpKg), "W/kg") +
-      metricHtml("W'", wPrimKJ(d.wPrim), "kJ") +
-      metricHtml("VO2max", d.vo2max, "ml") +
-    '</div>' +
-    '<div class="data-kort">' +
-      dataRaekke("3 min test (Watt)", d.test3min || "–", "B14") +
-      dataRaekke("6 min test (Watt)", d.test6min || "–", "B15") +
-      dataRaekke("12 min test (Watt)", d.test12min || "–", "B16") +
-    '</div>' +
-    sektionLabel("Fysik") +
-    '<div class="data-kort">' +
-      dataRaekke("Højde", (d.hojde || "–") + " cm", "B10") +
-      dataRaekke("Vægt", (d.vaegt || "–") + " kg", "B11") +
-      dataRaekke("Fødselsdato", d.fodselsdato || "–", "B9") +
-    '</div>';
-}
+    async function saveRider(id) {
+        const btn = event.target;
+        btn.innerText = "Gemmer...";
+        
+        const payload = {
+            id: id,
+            B7: document.getElementById(`B7-${id}`).value,
+            B14: document.getElementById(`B14-${id}`).value,
+            B15: document.getElementById(`B15-${id}`).value,
+            B16: document.getElementById(`B16-${id}`).value,
+            historik: document.getElementById(`hist-${id}-text`).value
+        };
 
-function bygProfilTab(d) {
-  document.getElementById("tab-profil").innerHTML =
-    sektionLabel("Mål") + noteBoks(d.maal, "Mål", "B12") +
-    sektionLabel("Personlighed") + noteBoks(d.personlighed, "Personlighed", "B16") +
-    sektionLabel("Vurdering") + noteBoks(d.vurdering, "Vurdering", "B18") +
-    sektionLabel("Ressourcer") + noteBoks(d.ressourcer, "Ressourcer", "B15");
-}
+        await fetch(WEB_APP_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+        
+        btn.innerText = "Gemt!";
+        setTimeout(() => btn.innerText = "Gem", 2000);
+    }
 
-function bygSaesonTab(d) {
-  document.getElementById("tab-saeson").innerHTML =
-    sektionLabel("Sæsonmål") + noteBoks(d.maal2026, "Mål", "B24") +
-    sektionLabel("Noter") + noteBoks(d.noter2026, "Noter", "B25");
-}
-
-function bygHistoriskTab(d) {
-  document.getElementById("tab-historisk").innerHTML =
-    sektionLabel("Historik & Fritekst") +
-    noteBoks(d.historik_fritekst, "Historik", "B39");
-}
-
-// HJÆLPEFUNKTIONER TIL HTML
-function sektionLabel(t) { return '<div class="sektion-label">' + t + '</div>'; }
-function metricHtml(l, v, e) {
-  return '<div class="metric-kort"><div class="metric-label">'+l+'</div><div class="metric-vaerdi">'+(v||"—")+' <span class="metric-enhed">'+e+'</span></div></div>';
-}
-function dataRaekke(n, v, c) {
-  return '<div class="data-raekke"><div class="data-noegle">'+n+'</div><div class="data-val">'+v+' <span class="rediger-ikon" onclick="aabneModal(\''+c+'\',\''+n+'\',\''+v+'\')">✎</span></div></div>';
-}
-function noteBoks(t, l, c) {
-  return '<div class="note-boks">'+(t||"—")+'<span class="rediger-ikon" style="position:absolute; top:10px; right:10px;" onclick="aabneModal(\''+c+'\',\''+l+'\',\''+(t||"").replace(/'/g,"\\'")+'\')">✎</span></div>';
-}
-
-function aabneModal(celle, label, nu) {
-  aktivCelleRef = celle;
-  document.getElementById("modal-titel").textContent = "Rediger: " + label;
-  document.getElementById("modal-tekst").value = nu;
-  document.getElementById("modal").classList.add("aktiv");
-}
-function skjulModal() { document.getElementById("modal").classList.remove("aktiv"); }
-function lukkModal(e) { if(e.target.id==="modal") skjulModal(); }
-
-function gemFelt() {
-  var ny = document.getElementById("modal-tekst").value;
-  var bTab = aktivTab;
-  fetch(API_URL + "?handling=gem&id=" + encodeURIComponent(aktivSheetId) + "&celle=" + encodeURIComponent(aktivCelleRef) + "&vaerdi=" + encodeURIComponent(ny))
-    .then(() => {
-      skjulModal();
-      hentRytterData(aktivSheetId, bTab);
-    });
-}
-
-function visRytterliste(ryttere) {
-  var html = '<div class="soeg-wrapper"><input class="soeg-felt" type="search" placeholder="Søg rytter..." oninput="soegRyttere(this.value)"></div>' +
-             '<div class="rytter-liste" id="rytter-items">';
-  ryttere.forEach(r => {
-    html += '<div class="rytter-kort" onclick="hentRytterData(\''+r.id+'\')">' +
-            '<div class="avatar">'+hentInitialer(r.navn)+'</div>' +
-            '<div class="rytter-info"><div class="rytter-navn">'+r.navn+'</div><div class="rytter-sub">'+(r.cp || "?")+'W</div></div>' +
-            '<div class="chevron">›</div></div>';
-  });
-  document.getElementById("liste-indhold").innerHTML = html + '</div>';
-}
-
-function soegRyttere(s) {
-  var low = s.toLowerCase();
-  document.querySelectorAll(".rytter-kort").forEach(k => {
-    var n = k.querySelector(".rytter-navn").textContent.toLowerCase();
-    k.style.display = n.includes(low) ? "" : "none";
-  });
-}
-
-function hentInitialer(n) { return n.split(" ").map(x=>x[0]).join("").toUpperCase().substring(0,2); }
-function formatCpKg(v) { return v ? parseFloat(v).toFixed(2) : "—"; }
-function wPrimKJ(v) { return v ? (parseFloat(v)/1000).toFixed(1) : "—"; }
+    loadData();
 </script>
 </body>
 </html>
