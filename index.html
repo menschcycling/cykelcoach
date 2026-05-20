@@ -1,56 +1,89 @@
 <!DOCTYPE html>
-<html>
+<html lang="da">
 <head>
     <meta charset="UTF-8">
-    <title>Mensch Cycling Coach</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mensch Cycling Dashboard</title>
     <style>
-        body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding: 10px; }
-        .rider-card { background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; overflow: hidden; }
-        .header { background: #1a1a1a; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .tabs { display: flex; background: #eee; gap: 2px; }
-        .tab { flex: 1; padding: 12px; text-align: center; cursor: pointer; border: none; background: #ddd; font-weight: bold; }
-        .tab.active { background: white; border-bottom: 3px solid #e74c3c; }
+        :root { --accent: #e74c3c; --dark: #1a1a1a; --bg: #f4f4f9; --text: #333; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); margin: 0; padding: 10px; color: var(--text); }
+        
+        /* Oversigts-linjen */
+        .rider-card { background: white; border-radius: 8px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid #ddd; overflow: hidden; }
+        
+        .rider-summary { 
+            padding: 15px; 
+            display: grid; 
+            grid-template-columns: 2fr 1fr 1fr auto; 
+            align-items: center; 
+            cursor: pointer;
+            background: white;
+        }
+        .rider-summary:hover { background: #fafafa; }
+        .rider-summary strong { font-size: 16px; color: var(--dark); }
+        .label-small { color: #888; font-size: 10px; text-transform: uppercase; display: block; margin-bottom: 2px; }
+
+        /* Detaljer sektion */
+        .rider-details { display: none; border-top: 1px solid #eee; }
+        .rider-details.open { display: block; }
+        
+        /* Tabs */
+        .tabs { display: flex; background: #f9f9f9; border-bottom: 1px solid #eee; }
+        .tab { flex: 1; padding: 12px; text-align: center; font-size: 13px; cursor: pointer; color: #666; border-bottom: 2px solid transparent; }
+        .tab.active { color: var(--accent); border-bottom: 2px solid var(--accent); font-weight: bold; background: white; }
+
+        /* Indhold */
         .content { padding: 15px; display: none; }
         .content.active { display: block; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        
+        .data-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
         .input-group { margin-bottom: 10px; }
-        label { display: block; font-size: 11px; color: #666; margin-bottom: 3px; }
-        input, textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        input:disabled { background: #f9f9f9; color: #888; border: 1px dashed #ccc; }
-        .save-btn { background: #27ae60; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
-        #loading { text-align: center; padding: 50px; font-weight: bold; }
+        .input-group label { display: block; font-size: 11px; font-weight: bold; margin-bottom: 4px; color: #555; }
+        
+        input, textarea { 
+            width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; 
+            font-size: 14px; box-sizing: border-box; font-family: inherit;
+        }
+        input:disabled { background: #f0f0f0; border-style: dashed; color: #000; }
+        
+        .section-title { 
+            grid-column: span 3; font-size: 12px; color: var(--accent); 
+            border-bottom: 1px solid #eee; margin: 15px 0 5px 0; 
+            padding-bottom: 3px; text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        .save-btn { 
+            background: #27ae60; color: white; border: none; padding: 12px; 
+            border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; 
+            margin-top: 15px; transition: 0.2s;
+        }
+        .save-btn:hover { background: #219150; }
+        
+        #loading { text-align: center; padding: 50px; font-weight: bold; color: #666; }
     </style>
 </head>
 <body>
 
-<div id="app">
-    <div id="loading">Henter rytterdata fra Google Sheets...</div>
-</div>
+    <div id="app">
+        <div id="loading">Henter rytterdata fra Google Sheets...</div>
+    </div>
 
 <script>
+    // INDSÆT DIN URL HERUNDER
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxLB0C-yva2nuGSp_Cm_Q5gX5i-_UUOh2-kZPKiJjvTDxax369cB3RVj0skiTdnoQql/exec'; 
 
     async function loadData() {
-    try {
-        // Vi tilføjer redirect: 'follow' for at håndtere Googles viderestilling
-        const response = await fetch(WEB_APP_URL, {
-            method: 'GET',
-            redirect: 'follow',
-            headers: {
-                'Content-Type': 'text/plain;charset=utf-8',
-            }
-        });
-        
-        if (!response.ok) throw new Error('Netværksrespons var ikke ok');
-        
-        const data = await response.json();
-        renderApp(data);
-    } catch (error) {
-        console.error("Fejl detaljer:", error);
-        document.getElementById('loading').innerText = "Fejl ved indlæsning. Er scriptet udrullet til 'Alle' (anonyme)?";
+        try {
+            const response = await fetch(WEB_APP_URL, {
+                method: 'GET',
+                redirect: 'follow'
+            });
+            const data = await response.json();
+            renderApp(data);
+        } catch (error) {
+            document.getElementById('loading').innerHTML = "Fejl ved indlæsning.<br><small>Tjek om dit Apps Script er udrullet til 'Alle'.</small>";
+        }
     }
-}
 
     function renderApp(riders) {
         const app = document.getElementById('app');
@@ -59,50 +92,88 @@
         riders.forEach(rider => {
             const card = document.createElement('div');
             card.className = 'rider-card';
+            
+            // Decimal-formatering
+            const wPrime = parseFloat(rider.cells.w_prime || 0).toFixed(2);
+            const cpVal = Math.round(parseFloat(rider.cells.cp || 0));
+
             card.innerHTML = `
-                <div class="header">
-                    <strong>${rider.name}</strong>
-                    <button class="save-btn" onclick="saveRider('${rider.id}')">Gem</button>
-                </div>
-                <div class="tabs">
-                    <div class="tab active" onclick="showTab(this, 'tal', '${rider.id}')">Tal</div>
-                    <div class="tab" onclick="showTab(this, 'profil', '${rider.id}')">Profil</div>
-                    <div class="tab" onclick="showTab(this, 'saeson', '${rider.id}')">Sæson</div>
-                    <div class="tab" onclick="showTab(this, 'hist', '${rider.id}')">Historisk</div>
+                <div class="rider-summary" onclick="toggleDetails(this)">
+                    <div><span class="label-small">Rytter</span><strong>${rider.name}</strong></div>
+                    <div><span class="label-small">Alder</span>${rider.cells.alder || '-'}</div>
+                    <div><span class="label-small">Klasse</span>${rider.cells.klasse || '-'}</div>
+                    <div style="color: #ccc; font-size: 12px;">▼</div>
                 </div>
                 
-                <div id="tal-${rider.id}" class="content active">
-                    <div class="grid">
-                        <div class="input-group"><label>Status A9 (Formel)</label><input type="text" disabled value="${rider.cells.A9}"></div>
-                        <div class="input-group"><label>Status B9 (Formel)</label><input type="text" disabled value="${rider.cells.B9}"></div>
-                        <div class="input-group"><label>Status C9 (Formel)</label><input type="text" disabled value="${rider.cells.C9}"></div>
-                        <div class="input-group"><label>Basis B7</label><input type="text" id="B7-${rider.id}" value="${rider.cells.B7}"></div>
-                        <div class="input-group"><label>Data B14</label><input type="text" id="B14-${rider.id}" value="${rider.cells.B14}"></div>
-                        <div class="input-group"><label>Data B15</label><input type="text" id="B15-${rider.id}" value="${rider.cells.B15}"></div>
-                        <div class="input-group"><label>Data B16</label><input type="text" id="B16-${rider.id}" value="${rider.cells.B16}"></div>
+                <div class="rider-details" id="details-${rider.id}">
+                    <div class="tabs">
+                        <div class="tab active" onclick="showTab(this, 'tal', '${rider.id}')">Tal</div>
+                        <div class="tab" onclick="showTab(this, 'profil', '${rider.id}')">Profil</div>
+                        <div class="tab" onclick="showTab(this, 'saeson', '${rider.id}')">Sæson</div>
+                        <div class="tab" onclick="showTab(this, 'hist', '${rider.id}')">Historisk</div>
                     </div>
-                </div>
 
-                <div id="profil-${rider.id}" class="content">
-                    <label>Profil Information</label>
-                    <textarea rows="4">${rider.cells.profil}</textarea>
-                </div>
+                    <!-- TAB: TAL -->
+                    <div id="tal-${rider.id}" class="content active">
+                        <div class="data-grid">
+                            <div class="input-group"><label>CP (Watt)</label><input type="text" disabled value="${cpVal}"></div>
+                            <div class="input-group"><label>W' (kJ)</label><input type="text" disabled value="${wPrime}"></div>
+                            <div class="input-group"><label>Vægt (kg)</label><input type="text" id="vaegt-${rider.id}" value="${rider.cells.vaegt}"></div>
+                            
+                            <div class="section-title">CP Test Resultater</div>
+                            
+                            <div class="input-group"><label>3 min (Watt)</label><input type="text" id="t3-${rider.id}" value="${rider.cells.test3min}"></div>
+                            <div class="input-group"><label>Forventet</label><input type="text" disabled value="${rider.cells.test3min_exp}"></div>
+                            <div class="input-group"><label>Afvigelse %</label><input type="text" disabled value="${rider.cells.test3min_pct}"></div>
 
-                <div id="saeson-${rider.id}" class="content">
-                    <p style="font-size: 13px; color: #666;">Sæsonplanlægning (Data fra række 25-35)</p>
-                </div>
+                            <div class="input-group"><label>6 min (Watt)</label><input type="text" id="t6-${rider.id}" value="${rider.cells.test6min}"></div>
+                            <div class="input-group"><label>Forventet</label><input type="text" disabled value="${rider.cells.test6min_exp}"></div>
+                            <div class="input-group"><label>Afvigelse %</label><input type="text" disabled value="${rider.cells.test6min_pct}"></div>
 
-                <div id="hist-${rider.id}" class="content">
-                    <label>Historik (Række 39-40)</label>
-                    <textarea id="hist-${rider.id}-text" rows="4">${rider.cells.historik}</textarea>
+                            <div class="input-group"><label>12 min (Watt)</label><input type="text" id="t12-${rider.id}" value="${rider.cells.test12min}"></div>
+                            <div class="input-group"><label>Forventet</label><input type="text" disabled value="${rider.cells.test12min_exp}"></div>
+                            <div class="input-group"><label>Afvigelse %</label><input type="text" disabled value="${rider.cells.test12min_pct}"></div>
+                        </div>
+                        <button class="save-btn" onclick="saveRider('${rider.id}')">Gem ændringer</button>
+                    </div>
+                    
+                    <!-- TAB: PROFIL -->
+                    <div id="profil-${rider.id}" class="content">
+                        <div class="input-group">
+                            <label>Profil Information</label>
+                            <textarea id="prof-${rider.id}" rows="8">${rider.cells.profil}</textarea>
+                        </div>
+                        <button class="save-btn" onclick="saveRider('${rider.id}')">Gem Profil</button>
+                    </div>
+
+                    <!-- TAB: SÆSON -->
+                    <div id="saeson-${rider.id}" class="content">
+                        <p style="color:#888; text-align:center;">Sæsonplanlægning (Kommer snart)</p>
+                    </div>
+
+                    <!-- TAB: HISTORISK -->
+                    <div id="hist-${rider.id}" class="content">
+                        <div class="input-group">
+                            <label>Historiske noter (Række 39-40)</label>
+                            <textarea id="hist-text-${rider.id}" rows="6">${rider.cells.historik}</textarea>
+                        </div>
+                        <button class="save-btn" onclick="saveRider('${rider.id}')">Gem Historik</button>
+                    </div>
                 </div>
             `;
             app.appendChild(card);
         });
     }
 
+    function toggleDetails(el) {
+        const details = el.nextElementSibling;
+        const isOpen = details.classList.contains('open');
+        document.querySelectorAll('.rider-details').forEach(d => d.classList.remove('open'));
+        if (!isOpen) details.classList.add('open');
+    }
+
     function showTab(tabEl, tabName, id) {
-        const card = tabEl.closest('.rider-card');
+        const card = tabEl.closest('.rider-details');
         card.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         card.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
         tabEl.classList.add('active');
@@ -111,24 +182,36 @@
 
     async function saveRider(id) {
         const btn = event.target;
+        const originalText = btn.innerText;
         btn.innerText = "Gemmer...";
+        btn.disabled = true;
         
         const payload = {
             id: id,
-            B7: document.getElementById(`B7-${id}`).value,
-            B14: document.getElementById(`B14-${id}`).value,
-            B15: document.getElementById(`B15-${id}`).value,
-            B16: document.getElementById(`B16-${id}`).value,
-            historik: document.getElementById(`hist-${id}-text`).value
+            B7: document.getElementById(`vaegt-${id}`).value,
+            B14: document.getElementById(`t3-${id}`).value,
+            B15: document.getElementById(`t6-${id}`).value,
+            B16: document.getElementById(`t12-${id}`).value,
+            historik: document.getElementById(`hist-text-${id}`).value
         };
 
-        await fetch(WEB_APP_URL, {
-            method: 'POST',
-            body: JSON.stringify(payload)
-        });
-        
-        btn.innerText = "Gemt!";
-        setTimeout(() => btn.innerText = "Gem", 2000);
+        try {
+            await fetch(WEB_APP_URL, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            });
+            btn.innerText = "Gemt!";
+            btn.style.background = "#2ecc71";
+        } catch (e) {
+            btn.innerText = "Fejl!";
+            btn.style.background = "#e74c3c";
+        }
+
+        setTimeout(() => {
+            btn.innerText = originalText;
+            btn.disabled = false;
+            btn.style.background = "";
+        }, 2000);
     }
 
     loadData();
