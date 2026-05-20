@@ -305,7 +305,7 @@ function bygTalTab(d) {
     '</div>' +
     sl("CP test") +
     '<div class="test-tabel-wrap"><table class="test-tabel">' +
-      '<thead><tr><th>Tid (s)</th><th>Watt</th><th>Forventet</th><th>Afv. %</th></tr></thead>' +
+      '<thead><tr><th>Tid (s)</th><th>Watt</th><th>Forventet W</th><th>Afv. %</th></tr></thead>' +
       '<tbody>' +
         testRaekke(d.test1tid, d.test1watt, d.test1forventet, d.test1afvigelse, "A14", "B14", 1) +
         testRaekke(d.test2tid, d.test2watt, d.test2forventet, d.test2afvigelse, "A15", "B15", 2) +
@@ -324,8 +324,24 @@ function bygTalTab(d) {
 function testRaekke(tid, watt, forventet, afvigelse, tidRef, wattRef, nr) {
   var tidVis  = tid  || "–";
   var wattVis = watt || "–";
-  var forvVis = forventet  || "–";
-  var afvVis  = afvigelse  || "–";
+  // Forventet watt: vis som heltal
+  var forvVis = "–";
+  if (forventet) {
+    var forvNum = parseFloat(String(forventet).replace(",","."));
+    forvVis = isNaN(forvNum) ? forventet : Math.round(forvNum).toString();
+  }
+  // Afvigelse: rå decimaltal fx -0.002976 → "-0,30%"
+  var afvVis = "–";
+  if (afvigelse) {
+    var afvNum = parseFloat(String(afvigelse).replace(",","."));
+    if (!isNaN(afvNum)) {
+      // Hvis tallet er meget lille (under 1), er det en andel der skal ganges med 100
+      var pct = Math.abs(afvNum) < 1 ? afvNum * 100 : afvNum;
+      afvVis = pct.toFixed(2).replace(".", ",") + "%";
+    } else {
+      afvVis = afvigelse;
+    }
+  }
   var redigerTid  = '<span class="rediger-ikon" onclick="aabneModal(\'' + tidRef  + '\',\'Tid '  + nr + '\',\'' + (tid||"")  + '\')">✎</span>';
   var redigerWatt = '<span class="rediger-ikon" onclick="aabneModal(\'' + wattRef + '\',\'Watt ' + nr + '\',\'' + (watt||"") + '\')">✎</span>';
   return '<tr>' +
@@ -484,15 +500,15 @@ function formatCpHel(val) {
   return isNaN(n) ? val : Math.round(n).toString();
 }
 // W' i Joule med punktum som tusindtalsseparator
+// Værdien fra sheet er allerede "11.057" (dansk format) – vis den direkte
 function formatWPrim(val) {
   if (!val) return "";
-  // Værdien fra sheet er fx "11.057" (dansk format med punktum som tusind-sep)
-  // Fjern evt. komma-decimal, bevar punktum som tusind-sep
   var str = String(val).trim();
-  // Prøv at parse: erstat dansk tusindpunktum -> ingen sep, komma -> punktum
+  // Hvis tallet allerede indeholder punktum og ingen komma → allerede dansk format, vis direkte
+  if (str.indexOf(".") !== -1 && str.indexOf(",") === -1) return str;
+  // Ellers: erstat komma-decimal med punktum og formater
   var n = parseFloat(str.replace(/\./g,"").replace(",","."));
-  if (isNaN(n)) return str; // returner råværdi hvis parsing fejler
-  // Formater med punktum som tusindtalsseparator, 0 decimaler
+  if (isNaN(n)) return str;
   return Math.round(n).toLocaleString("da-DK").replace(/,/g,".");
 }
 </script>
