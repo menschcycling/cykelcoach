@@ -7,40 +7,27 @@
     <style>
         :root { --accent: #a6192e; --dark: #1a1a1a; --bg: #f4f4f9; --text: #333; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); margin: 0; padding: 10px; color: var(--text); padding-bottom: 80px; }
-        
-        /* Header med Logo */
         .app-header { display: flex; align-items: center; gap: 15px; padding: 10px 5px 20px 5px; }
         .app-header img { height: 50px; width: auto; }
         .app-header h1 { font-size: 22px; margin: 0; color: var(--dark); text-transform: uppercase; letter-spacing: 1px; }
-
-        /* Oversigts-kort */
         .rider-card { background: white; border-radius: 8px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid #ddd; overflow: hidden; }
         .rider-summary { padding: 15px; display: grid; grid-template-columns: 2fr 1fr 1fr auto; align-items: center; cursor: pointer; background: white; }
         .rider-summary strong { font-size: 16px; color: var(--dark); }
         .label-small { color: #888; font-size: 10px; text-transform: uppercase; display: block; margin-bottom: 2px; }
-
-        /* Detaljer & Tabs */
         .rider-details { display: none; border-top: 1px solid #eee; }
         .rider-details.open { display: block; }
         .tabs { display: flex; background: #f9f9f9; border-bottom: 1px solid #eee; }
         .tab { flex: 1; padding: 12px; text-align: center; font-size: 13px; cursor: pointer; color: #666; }
         .tab.active { color: var(--accent); border-bottom: 2px solid var(--accent); font-weight: bold; background: white; }
-
-        /* Data Layout */
         .content { padding: 15px; display: none; }
         .content.active { display: block; }
         .data-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; }
         .input-group { margin-bottom: 10px; }
         .input-group label { display: block; font-size: 9px; font-weight: bold; margin-bottom: 4px; color: #777; text-transform: uppercase; }
-        
         input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box; }
-        input:disabled { background: #f9f9f9; color: #000; font-weight: 600; border-style: solid; border-color: #eee; }
-        
+        input:disabled { background: #f9f9f9; color: #000; font-weight: 600; }
         .section-title { grid-column: span 4; font-size: 12px; color: var(--accent); border-bottom: 1px solid #eee; margin: 15px 0 5px 0; padding-bottom: 3px; text-transform: uppercase; font-weight: bold; }
-
         .save-btn { background: var(--accent); color: white; border: none; padding: 14px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 15px; text-transform: uppercase; }
-
-        /* Indstillinger (URL felt) */
         .settings-area { position: fixed; bottom: 0; left: 0; right: 0; background: #eee; padding: 10px; border-top: 1px solid #ccc; font-size: 11px; z-index: 100; }
         .settings-content { display: none; margin-top: 10px; }
         .settings-content.open { display: block; }
@@ -58,7 +45,6 @@
         <div id="loading">Henter data...<br><small>Tjek evt. din Web App URL i bunden.</small></div>
     </div>
 
-    <!-- INDSTILLINGER (HER KAN DU INDSÆTTE DIN URL) -->
     <div class="settings-area">
         <div onclick="document.querySelector('.settings-content').classList.toggle('open')" style="cursor:pointer; font-weight:bold; color:#666;">
             ⚙️ Indstillinger (Klik for at ændre Google Script URL)
@@ -73,7 +59,6 @@
 <script>
     let WEB_APP_URL = localStorage.getItem('mensch_app_url') || '';
 
-    // Opstart: Tjek om vi har en URL
     if (WEB_APP_URL) {
         document.getElementById('url-input').value = WEB_APP_URL;
         loadData();
@@ -90,10 +75,12 @@
     async function loadData() {
         try {
             const response = await fetch(WEB_APP_URL, { method: 'GET', redirect: 'follow' });
+            if (!response.ok) throw new Error("Netværksfejl");
             const data = await response.json();
             renderApp(data);
         } catch (error) {
-            document.getElementById('loading').innerHTML = "Fejl ved indlæsning. Er URL'en korrekt?";
+            console.error(error);
+            document.getElementById('loading').innerHTML = "Fejl ved indlæsning.<br><small>Årsag: " + error.message + "</small>";
         }
     }
 
@@ -105,7 +92,7 @@
             const card = document.createElement('div');
             card.className = 'rider-card';
             
-            // Formatering
+            // Sikker formatering (håndterer tomme celler)
             const cpVal = Math.round(parseFloat(rider.cells.cp || 0));
             const wPrime = parseFloat(rider.cells.w_prime || 0).toFixed(2);
             const relCP = parseFloat(rider.cells.relativCP || 0).toFixed(2);
@@ -136,26 +123,18 @@
                             <div class="input-group"><label>Vægt (kg)</label><input type="text" id="vaegt-${rider.id}" value="${rider.cells.vaegt}"></div>
                             
                             <div class="section-title">CP Test Resultater</div>
-                            
-                            <!-- Kolonne Overskrifter -->
-                            <div class="input-group"><label>Test (Watt)</label></div>
-                            <div class="input-group"><label>Forventet watt</label></div>
-                            <div class="input-group"><label>Afvigelse %</label></div>
-                            <div class="input-group"><label>Tid (sek)</label></div>
+                            <div class="input-group"><label>Test (Watt)</label></div><div class="input-group"><label>Forventet watt</label></div><div class="input-group"><label>Afvigelse %</label></div><div class="input-group"><label>Tid (sek)</label></div>
 
-                            <!-- 3 min -->
                             <div class="input-group"><input type="text" id="t3-${rider.id}" value="${rider.cells.test3min}"></div>
                             <div class="input-group"><input type="text" disabled value="${formatWatt(rider.cells.test3min_exp)}"></div>
                             <div class="input-group"><input type="text" disabled value="${formatPct(rider.cells.test3min_pct)}"></div>
                             <div class="input-group"><input type="text" disabled value="${rider.cells.test3min_tid}"></div>
 
-                            <!-- 6 min -->
                             <div class="input-group"><input type="text" id="t6-${rider.id}" value="${rider.cells.test6min}"></div>
                             <div class="input-group"><input type="text" disabled value="${formatWatt(rider.cells.test6min_exp)}"></div>
                             <div class="input-group"><input type="text" disabled value="${formatPct(rider.cells.test6min_pct)}"></div>
                             <div class="input-group"><input type="text" disabled value="${rider.cells.test6min_tid}"></div>
 
-                            <!-- 12 min -->
                             <div class="input-group"><input type="text" id="t12-${rider.id}" value="${rider.cells.test12min}"></div>
                             <div class="input-group"><input type="text" disabled value="${formatWatt(rider.cells.test12min_exp)}"></div>
                             <div class="input-group"><input type="text" disabled value="${formatPct(rider.cells.test12min_pct)}"></div>
@@ -165,12 +144,12 @@
                     </div>
                     
                     <div id="profil-${rider.id}" class="content">
-                        <textarea id="prof-${rider.id}" rows="10" style="width:100%; border:1px solid #ddd; border-radius:4px; padding:10px;">${rider.cells.profil}</textarea>
+                        <textarea id="prof-${rider.id}" rows="10" style="width:100%; border:1px solid #ddd; border-radius:4px; padding:10px;">${rider.cells.profil || ''}</textarea>
                         <button class="save-btn" onclick="saveRider('${rider.id}')">Gem Profil</button>
                     </div>
                     <div id="saeson-${rider.id}" class="content">Sæsonplanlægning...</div>
                     <div id="hist-${rider.id}" class="content">
-                        <textarea id="hist-text-${rider.id}" rows="6" style="width:100%; border:1px solid #ddd; border-radius:4px; padding:10px;">${rider.cells.historik}</textarea>
+                        <textarea id="hist-text-${rider.id}" rows="6" style="width:100%; border:1px solid #ddd; border-radius:4px; padding:10px;">${rider.cells.historik || ''}</textarea>
                         <button class="save-btn" onclick="saveRider('${rider.id}')">Gem Historik</button>
                     </div>
                 </div>
@@ -197,7 +176,6 @@
     async function saveRider(id) {
         const btn = event.target;
         btn.innerText = "Gemmer...";
-        
         const payload = {
             id: id,
             B7: document.getElementById(`vaegt-${id}`).value,
@@ -207,7 +185,6 @@
             profil: document.getElementById(`prof-${id}`) ? document.getElementById(`prof-${id}`).value : undefined,
             historik: document.getElementById(`hist-text-${id}`) ? document.getElementById(`hist-text-${id}`).value : undefined
         };
-
         try {
             await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
             btn.innerText = "Gemt!";
