@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="da">
 <head>
@@ -467,8 +468,9 @@ function visRytterliste(ryttere) {
   el.innerHTML = html;
 }
 function rytterKortHtml(r) {
-  var cpKgVis = r.cpKg ? formatCpKg(r.cpKg) : "";
-  var cpTekst = r.cp ? r.cp + " W · " + cpKgVis + " W/kg" : "Ingen data endnu";
+  var cpVis   = r.cp   ? formatCpHel(r.cp)   : "";
+  var cpKgVis = r.cpKg ? formatCpKg(r.cpKg)  : "";
+  var cpTekst = cpVis  ? cpVis + " W · " + cpKgVis + " W/kg" : "Ingen data endnu";
   return '<div class="rytter-kort" onclick="hentRytterData(\'' + r.id + '\')">' +
     '<div class="avatar">' + hentInitialer(r.navn) + '</div>' +
     '<div class="rytter-info"><div class="rytter-navn">' + r.navn + '</div>' +
