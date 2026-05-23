@@ -529,9 +529,12 @@ function visSammenlignTabel() {
   // Sortér
   var kol = sammenlignSortKol;
   data = data.slice().sort((a,b) => {
-    var av = parseFloat(String(a[kol]||"").replace(/\./g,"").replace(",",".")) || 0;
-    var bv = parseFloat(String(b[kol]||"").replace(/\./g,"").replace(",",".")) || 0;
-    if (kol === "navn") { av = a.navn||""; bv = b.navn||""; return sammenlignSortAsc ? av.localeCompare(bv,"da") : bv.localeCompare(av,"da"); }
+    if (kol === "navn") {
+      var av = a.navn||""; var bv = b.navn||"";
+      return sammenlignSortAsc ? av.localeCompare(bv,"da") : bv.localeCompare(av,"da");
+    }
+    var av = talVaerdi(a[kol]);
+    var bv = talVaerdi(b[kol]);
     return sammenlignSortAsc ? av - bv : bv - av;
   });
 
@@ -628,6 +631,24 @@ function hentInitialer(navn) {
   if (!navn) return "?";
   var d = navn.trim().split(/\s+/);
   return d.length >= 2 ? (d[0][0] + d[d.length-1][0]).toUpperCase() : navn.substring(0,2).toUpperCase();
+}
+// Parser tal uanset dansk/internationalt format
+// "4.71" → 4.71, "4,71" → 4.71, "11.057" → 11057, "285" → 285
+function talVaerdi(val) {
+  if (!val) return 0;
+  var s = String(val).trim();
+  // Hvis punktum bruges som tusindtalssep (fx "11.057"): kun ét punktum og ingen komma
+  if (s.indexOf(".") !== -1 && s.indexOf(",") === -1) {
+    var parts = s.split(".");
+    if (parts[parts.length-1].length === 3) {
+      // Tusindtalsseparator – fjern punktum
+      return parseFloat(s.replace(/\./g,"")) || 0;
+    }
+    // Decimalpunktum (fx "4.71")
+    return parseFloat(s) || 0;
+  }
+  // Dansk decimalkomma (fx "4,71")
+  return parseFloat(s.replace(/\./g,"").replace(",",".")) || 0;
 }
 function formatCpKg(val) {
   if (!val) return "";
