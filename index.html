@@ -127,6 +127,25 @@
   .indst-gem { width: 100%; margin-top: 10px; padding: 13px; background: #1a1a18; color: white; border: none; border-radius: var(--radius-sm); font-size: 15px; font-weight: 600; cursor: pointer; }
   .indst-vejl { font-size: 13px; color: var(--tekst2); margin-top: 8px; line-height: 1.5; }
   .ingen-ryttere { text-align: center; padding: 32px 16px; color: var(--tekst2); font-size: 15px; }
+
+  /* SAMMENLIGNING */
+  .sammenlign-knap { margin: 0 16px 16px; padding: 13px; background: #1a1a18; color: white; border: none; border-radius: var(--radius-sm); font-size: 15px; font-weight: 600; cursor: pointer; width: calc(100% - 32px); display: block; text-align: center; }
+  .sammenlign-knap:active { opacity: 0.8; }
+  .filter-bar { display: flex; gap: 6px; padding: 0 16px 12px; flex-wrap: wrap; }
+  .filter-knap { padding: 6px 12px; border-radius: 20px; border: 0.5px solid var(--kant); font-size: 13px; font-weight: 500; cursor: pointer; background: var(--kort); color: var(--tekst2); transition: all 0.15s; white-space: nowrap; }
+  .filter-knap.aktiv { background: #1a1a18; color: white; border-color: transparent; }
+  .komp-tabel-wrap { padding: 0 16px 32px; overflow-x: auto; }
+  .komp-tabel { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .komp-tabel th { font-size: 11px; font-weight: 600; color: var(--tekst2); text-transform: uppercase; letter-spacing: 0.05em; padding: 8px 8px; text-align: right; background: var(--graa-mid); cursor: pointer; white-space: nowrap; user-select: none; }
+  .komp-tabel th:first-child { text-align: left; }
+  .komp-tabel th.sorteret { color: var(--tekst); }
+  .komp-tabel th .sort-pil { margin-left: 3px; opacity: 0.5; }
+  .komp-tabel th.sorteret .sort-pil { opacity: 1; }
+  .komp-tabel td { padding: 10px 8px; border-bottom: 0.5px solid var(--kant); text-align: right; color: var(--tekst); vertical-align: middle; }
+  .komp-tabel td:first-child { text-align: left; font-weight: 600; }
+  .komp-tabel tr:last-child td { border-bottom: none; }
+  .komp-tabel tr:active td { background: var(--graa-lys); }
+  .komp-tabel-kort { background: var(--kort); border: 0.5px solid var(--kant); border-radius: var(--radius); overflow: hidden; margin-bottom: 10px; }
 </style>
 </head>
 <body>
@@ -139,6 +158,17 @@
   </div>
   <div id="liste-indhold">
     <div class="status"><div class="spinner"></div><div>Henter ryttere...</div></div>
+  </div>
+</div>
+
+<!-- SAMMENLIGNING VIEW -->
+<div id="sammenlign-view" style="display:none;">
+  <div class="topbar">
+    <div class="tilbage-knap" onclick="visListe()">‹ Tilbage</div>
+    <div class="topbar-titel">Sammenlign</div>
+  </div>
+  <div id="sammenlign-indhold">
+    <div class="status"><div class="spinner"></div><div>Henter data...</div></div>
   </div>
 </div>
 
@@ -196,6 +226,10 @@ var rytterListe = [];
 var aktivSheetId = null;
 var aktivCelleRef = null;
 var aktivTab = "tal";
+var sammenlignData = [];
+var sammenlignSortKol = "cp";
+var sammenlignSortAsc = false;
+var aktivFilter = "Alle";
 
 window.onload = function() {
   if (API_URL) hentRytterliste(); else visIndstillinger();
@@ -207,24 +241,36 @@ function visListe() {
   document.getElementById("detalje-view").style.display = "none";
   document.getElementById("detalje-view").className = "detalje";
   document.getElementById("indst-view").style.display = "none";
+  document.getElementById("sammenlign-view").style.display = "none";
 }
 function visDetalje() {
   document.getElementById("liste-view").style.display = "none";
   document.getElementById("indst-view").style.display = "none";
+  document.getElementById("sammenlign-view").style.display = "none";
   document.getElementById("detalje-view").style.display = "";
   document.getElementById("detalje-view").className = "";
 }
 function visIndstillinger() {
   document.getElementById("liste-view").style.display = "none";
   document.getElementById("detalje-view").style.display = "none";
+  document.getElementById("sammenlign-view").style.display = "none";
   document.getElementById("indst-view").style.display = "";
   document.getElementById("api-url-input").value = localStorage.getItem("cykelcoach_api_url") || "";
+}
+function visSammenligning() {
+  document.getElementById("liste-view").style.display = "none";
+  document.getElementById("detalje-view").style.display = "none";
+  document.getElementById("indst-view").style.display = "none";
+  document.getElementById("sammenlign-view").style.display = "";
+  if (sammenlignData.length === 0) hentSammenlignData();
+  else visSammenlignTabel();
 }
 function gemUrl() {
   var url = document.getElementById("api-url-input").value.trim();
   if (!url) return;
   localStorage.setItem("cykelcoach_api_url", url);
   API_URL = url;
+  sammenlignData = [];
   visListe();
   hentRytterliste();
 }
@@ -454,6 +500,98 @@ function gemFelt() {
     .finally(() => { gemKnap.textContent = "Gem i Google Sheet"; gemKnap.disabled = false; });
 }
 
+// ── SAMMENLIGNING ─────────────────────────────────────────
+function hentSammenlignData() {
+  document.getElementById("sammenlign-indhold").innerHTML =
+    '<div class="status"><div class="spinner"></div><div>Henter alle ryttere...</div></div>';
+  fetch(API_URL + "?handling=sammenlign")
+    .then(r => r.json())
+    .then(data => {
+      if (data.fejl) throw new Error(data.fejl);
+      sammenlignData = data.ryttere || [];
+      visSammenlignTabel();
+    })
+    .catch(err => {
+      document.getElementById("sammenlign-indhold").innerHTML =
+        '<div class="fejl-boks">Fejl: ' + err.message + '</div>';
+    });
+}
+
+function visSammenlignTabel() {
+  // Find unikke klasser
+  var klasser = ["Alle"];
+  sammenlignData.forEach(r => { if (r.niveau && klasser.indexOf(r.niveau) === -1) klasser.push(r.niveau); });
+  klasser.sort((a,b) => a === "Alle" ? -1 : a.localeCompare(b,"da"));
+
+  // Filtrer
+  var data = aktivFilter === "Alle" ? sammenlignData : sammenlignData.filter(r => r.niveau === aktivFilter);
+
+  // Sortér
+  var kol = sammenlignSortKol;
+  data = data.slice().sort((a,b) => {
+    var av = parseFloat(String(a[kol]||"").replace(/\./g,"").replace(",",".")) || 0;
+    var bv = parseFloat(String(b[kol]||"").replace(/\./g,"").replace(",",".")) || 0;
+    if (kol === "navn") { av = a.navn||""; bv = b.navn||""; return sammenlignSortAsc ? av.localeCompare(bv,"da") : bv.localeCompare(av,"da"); }
+    return sammenlignSortAsc ? av - bv : bv - av;
+  });
+
+  // Filter knapper
+  var filterHtml = '<div class="filter-bar">';
+  klasser.forEach(k => {
+    var aktiv = k === aktivFilter ? " aktiv" : "";
+    filterHtml += '<div class="filter-knap' + aktiv + '" onclick="saetFilter(\'' + k + '\')">' + k + '</div>';
+  });
+  filterHtml += '</div>';
+
+  // Tabel
+  function th(label, kol_id) {
+    var sorteret = sammenlignSortKol === kol_id ? " sorteret" : "";
+    var pil = sammenlignSortKol === kol_id ? (sammenlignSortAsc ? "↑" : "↓") : "↕";
+    return '<th class="' + sorteret + '" onclick="sorterSammenlign(\'' + kol_id + '\')">' + label + ' <span class="sort-pil">' + pil + '</span></th>';
+  }
+
+  var tabelHtml = '<div class="komp-tabel-wrap"><div class="komp-tabel-kort"><table class="komp-tabel">' +
+    '<thead><tr>' +
+      th("Navn", "navn") +
+      th("Alder", "alder") +
+      th("CP W", "cp") +
+      th("W/kg", "cpKg") +
+      th("W'", "wPrim") +
+      th("VO2max", "vo2max") +
+    '</tr></thead><tbody>';
+
+  data.forEach(r => {
+    var cpVis    = r.cp    ? formatCpHel(r.cp)   : "–";
+    var cpKgVis  = r.cpKg  ? formatCpKg(r.cpKg)  : "–";
+    var wPrimVis = r.wPrim || "–";
+    var vo2Vis   = r.vo2max|| "–";
+    var alderVis = r.alder || "–";
+    tabelHtml += '<tr onclick="hentRytterData(\'' + r.id + '\')" style="cursor:pointer;">' +
+      '<td>' + r.navn + (r.niveau ? ' <span class="badge ' + ({"A":"badge-A","B":"badge-B","U19":"badge-U19","U17":"badge-U17","Master":"badge-Master","Motion":"badge-Motion"}[r.niveau]||"badge-anden") + '" style="font-size:10px;padding:2px 6px;">' + r.niveau + '</span>' : '') + '</td>' +
+      '<td>' + alderVis + '</td>' +
+      '<td>' + cpVis + '</td>' +
+      '<td>' + cpKgVis + '</td>' +
+      '<td>' + wPrimVis + '</td>' +
+      '<td>' + vo2Vis + '</td>' +
+    '</tr>';
+  });
+
+  tabelHtml += '</tbody></table></div></div>';
+
+  document.getElementById("sammenlign-indhold").innerHTML = filterHtml + tabelHtml;
+}
+
+function sorterSammenlign(kol) {
+  if (sammenlignSortKol === kol) sammenlignSortAsc = !sammenlignSortAsc;
+  else { sammenlignSortKol = kol; sammenlignSortAsc = false; }
+  visSammenlignTabel();
+}
+
+function saetFilter(klasse) {
+  aktivFilter = klasse;
+  visSammenlignTabel();
+}
+
 // ── LISTE ─────────────────────────────────────────────────
 function visRytterliste(ryttere) {
   var el = document.getElementById("liste-indhold");
@@ -464,7 +602,8 @@ function visRytterliste(ryttere) {
     '<div style="font-size:12px;font-weight:600;color:var(--tekst2);text-transform:uppercase;letter-spacing:0.06em;padding:8px 16px 6px;">Hold (' + ryttere.length + ' ryttere)</div>' +
     '<div class="rytter-liste" id="rytter-liste-items">';
   ryttere.forEach(r => { html += rytterKortHtml(r); });
-  html += '</div>';
+  html += '</div>' +
+    '<button class="sammenlign-knap" onclick="visSammenligning()">⚡ Sammenlign ryttere</button>';
   el.innerHTML = html;
 }
 function rytterKortHtml(r) {
